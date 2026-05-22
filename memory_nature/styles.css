@@ -27,6 +27,22 @@ body.theme-eco {
     --accent: #ff6b6b;
 }
 
+/* Theme: Nature Zen Refinements */
+.theme-zen .card-front {
+    border: 2px solid #e0e0e0;
+    background: #ffffff;
+}
+
+.theme-zen .card-inner {
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-zen header {
+    color: #4a5568;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
