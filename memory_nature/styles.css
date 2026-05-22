@@ -1,1 +1,103 @@
-/* Styles for Nature Memory Game */
+:root {
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-back: #fff;
+    --card-front: #e2e8f0;
+    --accent: #4a90e2;
+    --text-color: #2d3748;
+    --card-radius: 12px;
+    --transition-speed: 0.5s;
+}
+
+body.theme-zen {
+    --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    --card-back: #fff;
+    --accent: #a8e6cf;
+}
+
+body.theme-forest {
+    --bg-gradient: linear-gradient(135deg, #1a2a1a 0%, #0d140d 100%);
+    --card-back: rgba(255, 255, 255, 0.1);
+    --accent: #2d5a27;
+    --text-color: #e2e8f0;
+}
+
+body.theme-eco {
+    --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    --card-back: #fff;
+    --accent: #ff6b6b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#game-container {
+    width: 90vw;
+    max-width: 800px;
+    padding: 20px;
+    text-align: center;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#game-board {
+    display: grid;
+    gap: 15px;
+    perspective: 1000px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.hidden { display: none !important; }
+
+.menu-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.theme-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.theme-options button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #4a90e2;
+    color: white;
+    transition: transform 0.2s;
+}
+
+.theme-options button:hover {
+    transform: scale(1.05);
+}
