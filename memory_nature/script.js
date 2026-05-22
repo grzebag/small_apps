@@ -113,7 +113,17 @@ class MemoryGame {
     }
 
     handleWin() {
-        console.log('Level won!');
+        clearInterval(this.timer);
+        const summary = `Ukończyłeś poziom ${this.level} w czasie ${this.seconds} sekund! Twój wynik to ${this.score}.`;
+        document.getElementById('level-summary').innerText = summary;
+        document.getElementById('next-level-overlay').classList.remove('hidden');
+        
+        document.getElementById('next-level-btn').onclick = () => {
+            this.level++;
+            document.getElementById('level').innerText = this.level;
+            document.getElementById('next-level-overlay').classList.add('hidden');
+            this.initLevel();
+        };
     }
 
     startTimer() {
