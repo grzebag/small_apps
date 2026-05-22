@@ -77,8 +77,43 @@ class MemoryGame {
     }
 
     flipCard(card) {
-        // Placeholder for Task 4 logic
-        console.log('Card flipped:', card.dataset.emoji);
+        if (this.isLocked || card.classList.contains('flipped') || this.flippedCards.includes(card)) return;
+
+        card.classList.add('flipped');
+        this.flippedCards.push(card);
+
+        if (this.flippedCards.length === 2) {
+            this.checkMatch();
+        }
+    }
+
+    checkMatch() {
+        this.isLocked = true;
+        const [card1, card2] = this.flippedCards;
+        const isMatch = card1.dataset.emoji === card2.dataset.emoji;
+
+        if (isMatch) {
+            this.matchedPairs++;
+            this.score += 10;
+            document.getElementById('score').innerText = this.score;
+            this.flippedCards = [];
+            this.isLocked = false;
+            
+            if (this.matchedPairs === this.getCardCount() / 2) {
+                this.handleWin();
+            }
+        } else {
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                this.flippedCards = [];
+                this.isLocked = false;
+            }, 1000);
+        }
+    }
+
+    handleWin() {
+        console.log('Level won!');
     }
 
     startTimer() {
