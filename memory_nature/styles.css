@@ -43,6 +43,32 @@ body.theme-eco {
     letter-spacing: 1px;
 }
 
+/* Theme: Forest Quest Refinements */
+.theme-forest .card-front {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #4ade80;
+}
+
+.theme-forest .card-back {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-forest header {
+    color: #a7f3d0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.theme-forest .overlay .menu-content {
+    background: rgba(25, 42, 25, 0.95);
+    color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
