@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Memory - Odkrywanka</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-zen">
+    <div id="game-container">
+        <header>
+            <div class="stat">Poziom: <span id="level">1</span></div>
+            <div class="stat">Czas: <span id="timer">00:00</span></div>
+            <div class="stat">Wynik: <span id="score">0</span></div>
+        </header>
+        
+        <main id="game-board"></main>
+
+        <div id="menu-overlay" class="overlay">
+            <div class="menu-content">
+                <h1>Nature Memory</h1>
+                <p>Wybierz swój styl:</p>
+                <div class="theme-options">
+                    <button data-theme="zen">Nature Zen</button>
+                    <button data-theme="forest">Forest Quest</button>
+                    <button data-theme="eco">Vibrant Eco</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="next-level-overlay" class="overlay hidden">
+            <div class="menu-content">
+                <h2>Poziom Ukończony!</h2>
+                <p id="level-summary"></p>
+                <button id="next-level-btn">Następny Poziom</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
