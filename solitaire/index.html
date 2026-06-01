@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasjans Klondike</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="top-bar">
+        <h1>PASJANS KLONDIKE</h1>
+        <button id="reset-btn">Nowa Gra</button>
+    </div>
+
+    <div class="game-board">
+        <div class="row top-row">
+            <div class="pile" id="stock" data-source="stock"></div>
+            <div class="pile" id="waste" data-source="waste"></div>
+            <div class="spacer"></div>
+            <div class="pile foundation" id="foundation-0" data-source="foundation" data-col="0"></div>
+            <div class="pile foundation" id="foundation-1" data-source="foundation" data-col="1"></div>
+            <div class="pile foundation" id="foundation-2" data-source="foundation" data-col="2"></div>
+            <div class="pile foundation" id="foundation-3" data-source="foundation" data-col="3"></div>
+        </div>
+        <div class="row bottom-row">
+            <div class="pile" id="tableau-0" data-source="tableau" data-col="0"></div>
+            <div class="pile" id="tableau-1" data-source="tableau" data-col="1"></div>
+            <div class="pile" id="tableau-2" data-source="tableau" data-col="2"></div>
+            <div class="pile" id="tableau-3" data-source="tableau" data-col="3"></div>
+            <div class="pile" id="tableau-4" data-source="tableau" data-col="4"></div>
+            <div class="pile" id="tableau-5" data-source="tableau" data-col="5"></div>
+            <div class="pile" id="tableau-6" data-source="tableau" data-col="6"></div>
+        </div>
+    </div>
+
+    <!-- Ekran wygranej (Casino / Premium Style) -->
+    <div id="victory-screen" class="victory-overlay hidden">
+        <div class="victory-modal">
+            <div class="victory-ribbon">Zwycięstwo</div>
+            <h2 class="victory-title">Mistrz Kart!</h2>
+            <p class="victory-subtitle">Pasjans został pomyślnie ukończony.</p>
+            
+            <div class="card-fan">
+                <div class="decor-card left">♠</div>
+                <div class="decor-card center">♥</div>
+                <div class="decor-card right">♦</div>
+            </div>
+
+            <button id="play-again-btn" class="gold-btn">Zagraj ponownie</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

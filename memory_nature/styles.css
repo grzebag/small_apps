@@ -1,191 +1,165 @@
 :root {
-    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    --card-back: #fff;
-    --card-front: #e2e8f0;
-    --accent: #4a90e2;
-    --text-color: #2d3748;
-    --card-radius: 12px;
-    --transition-speed: 0.5s;
+    --transition-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-zen: cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-forest: cubic-bezier(0.7, 0, 0.3, 1);
 }
 
-body.theme-zen {
-    --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-    --card-back: #fff;
-    --accent: #a8e6cf;
+/* Global Reset & Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
-body.theme-forest {
-    --bg-gradient: linear-gradient(135deg, #1a2a1a 0%, #0d140d 100%);
-    --card-back: rgba(255, 255, 255, 0.1);
-    --accent: #2d5a27;
-    --text-color: #e2e8f0;
-}
-
-body.theme-eco {
-    --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-    --card-back: #fff;
-    --accent: #ff6b6b;
-}
-
-/* Theme: Nature Zen Refinements */
-.theme-zen .card-front {
-    border: 2px solid #e0e0e0;
-    background: #ffffff;
-}
-
-.theme-zen .card-inner {
-    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.theme-zen header {
-    color: #4a5568;
-    text-transform: lowercase;
-    letter-spacing: 1px;
-}
-
-/* Theme: Forest Quest Refinements */
-.theme-forest .card-front {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #4ade80;
-}
-
-.theme-forest .card-back {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.theme-forest header {
-    color: #a7f3d0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.theme-forest .overlay .menu-content {
-    background: rgba(25, 42, 25, 0.95);
-    color: #e2e8f0;
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-}
-
-/* Theme: Vibrant Eco Refinements */
-.theme-eco .card-inner {
-    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.theme-eco .card-front {
-    background: #ffffff;
-    border: 3px solid #ff6b6b;
-    color: #ff6b6b;
-}
-
-.theme-eco .card-back {
-    background: #fff0f0;
-    border: 3px solid #ff6b6b;
-}
-
-.theme-eco header {
-    color: #ff6b6b;
-    text-transform: uppercase;
-    font-weight: 900;
-}
-
-.theme-eco .overlay .menu-content {
-    border: 5px solid #ff6b6b;
-    transform: rotate(-2deg);
-}
-
-.theme-eco .overlay h1 {
-    color: #ff6b6b;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--bg-gradient);
-    color: var(--text-color);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    font-family: 'Poppins', sans-serif;
+    transition: background 0.8s ease;
+    background-attachment: fixed;
 }
 
+/* Atmospheric Grain Overlay */
+body::after {
+    content: "";
+    position: fixed;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+    0%, 100% { transform:translate(0, 0) }
+    10% { transform:translate(-5%, -10%) }
+    20% { transform:translate(-15%, 5%) }
+    30% { transform:translate(7%, -25%) }
+    40% { transform:translate(-5%, 25%) }
+    50% { transform:translate(-15%, 10%) }
+    60% { transform:translate(15%, 0%) }
+    70% { transform:translate(0%, 15%) }
+    80% { transform:translate(3%, 35%) }
+    90% { transform:translate(-10%, 10%) }
+}
+
+/* Theme: Nature Zen */
+body.theme-zen {
+    background: #F5E6D3;
+    --primary: #5D4037; 
+    --surface: rgba(255, 250, 240, 0.6);
+    --card-front-bg: #FFF9F0;
+    --text: #3E2723;
+    --font-display: 'Playfair Display', serif;
+}
+
+/* Theme: Forest Quest */
+body.theme-forest {
+    background: #040807;
+    --primary: #00F5D4; 
+    --surface: rgba(10, 25, 20, 0.4);
+    --card-front-bg: rgba(255, 255, 255, 0.03);
+    --text: #E0E1DD;
+    --font-display: 'Poppins', sans-serif;
+    --bark: #2A1B15;
+}
+
+/* Theme: Vibrant Eco */
+body.theme-eco {
+    background: #7FFF00; 
+    --primary: #FF1493; 
+    --surface: #FFFFFF;
+    --card-front-bg: #FFD700; 
+    --text: #000000;
+    --font-display: 'Poppins', sans-serif;
+}
+
+/* Container & Dashboard */
 #game-container {
-    width: 90vw;
-    max-width: 800px;
-    padding: 20px;
-    text-align: center;
+    width: 95vw;
+    max-width: 1000px;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 header {
+    background: var(--surface);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 3rem;
+    border-radius: 2.5rem;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
+    margin-bottom: 3rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    animation: dashboard-float 5s ease-in-out infinite;
 }
 
-#game-board {
-    display: grid;
-    gap: 15px;
-    perspective: 1000px;
+@keyframes dashboard-float {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-8px) rotate(0.5deg); }
 }
 
-.overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-}
-
-.hidden { display: none !important; }
-
-.menu-content {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-    color: #333;
-}
-
-.theme-options {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.theme-options button {
-    padding: 10px 20px;
+.stat {
+    font-family: var(--font-display);
+    font-weight: 500;
     font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background: #4a90e2;
-    color: white;
-    transition: transform 0.2s;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
 }
 
-.theme-options button:hover {
-    transform: scale(1.05);
+.stat span {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
 }
 
+/* Game Board Grid Logic */
+#game-board {
+    flex: 1;
+    display: grid;
+    gap: 1.5rem;
+    perspective: 2000px;
+    align-content: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Card Implementation */
 .card {
-    aspect-ratio: 3/4;
+    aspect-ratio: 1/1;
     cursor: pointer;
+    position: relative;
+    width: 100%;
+    transition: transform 0.3s var(--transition-smooth);
+}
+
+.card:not(.flipped):hover {
+    transform: translateY(-8px);
 }
 
 .card-inner {
     position: relative;
     width: 100%;
     height: 100%;
-    transition: transform var(--transition-speed);
     transform-style: preserve-3d;
+    transition: transform 0.6s var(--transition-smooth);
 }
 
 .card.flipped .card-inner {
@@ -200,84 +174,326 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2.5rem;
-    border-radius: var(--card-radius);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 1.8rem;
+    font-size: 4rem;
 }
 
 .card-front {
-    background: var(--card-back);
-    color: var(--accent);
+    background: var(--card-front-bg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--primary);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
+}
+
+.card-front::after {
+    content: "🍃";
+    font-family: var(--font-display);
+    opacity: 0.15;
+    font-size: 2.5rem;
 }
 
 .card-back {
     background: white;
     transform: rotateY(180deg);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    font-size: 6rem; /* Increased size to fill the card */
 }
 
-/* Responsive Grid & Final Polish */
-@media (max-width: 600px) {
-    #game-container {
-        padding: 10px;
-        width: 95vw;
-    }
+/* --- THEME SPECIFIC REFINEMENTS --- */
 
-    header {
-        font-size: 0.9rem;
-        margin-bottom: 15px;
-    }
+/* NATURE ZEN: Organic Minimalism */
+.theme-zen .card-inner {
+    transition: transform 0.9s var(--transition-zen);
+}
+.theme-zen .card-front {
+    border-radius: 3rem 0.8rem;
+    background: #FFF9F0;
+    border: 1.5px solid rgba(93, 64, 55, 0.15);
+}
+.theme-zen .card-back {
+    border-radius: 3rem 0.8rem;
+    background: #FFF9F0;
+    color: var(--text);
+}
+.theme-zen header {
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--primary);
+    box-shadow: none;
+    animation: none;
+}
+.theme-zen .stat span {
+    font-style: italic;
+}
+.theme-zen .menu-content h1 {
+    color: var(--text);
+}
 
-    #game-board {
-        gap: 8px;
-    }
+/* FOREST QUEST: Deep Immersive Mystery */
+.theme-forest .card-inner {
+    transition: transform 1.2s var(--transition-forest);
+}
+.theme-forest .card-front {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(0, 245, 212, 0.25);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 245, 212, 0.05),
+        0 10px 30px rgba(0,0,0,0.5);
+}
+.theme-forest .card-back {
+    background: linear-gradient(135deg, var(--bark), #0A0F0D);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    text-shadow: 0 0 15px var(--primary);
+    box-shadow: 
+        0 0 50px rgba(0, 245, 212, 0.4),
+        inset 0 0 20px rgba(0,0,0,0.5);
+}
+.theme-forest header {
+    background: rgba(10, 25, 20, 0.6);
+    border: 1px solid rgba(0, 245, 212, 0.4);
+    box-shadow: 
+        0 0 40px rgba(0, 245, 212, 0.1),
+        0 20px 40px rgba(0,0,0,0.4);
+}
+.theme-forest::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 50% 50%, transparent 0%, #000 100%);
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 1;
+}
 
-    .card-front, .card-back {
-        font-size: 1.8rem;
-    }
+/* VIBRANT ECO: Toy-like Maximalism */
+.theme-eco .card-inner {
+    transition: transform 0.5s var(--transition-bounce);
+}
+.theme-eco .card-front {
+    background: #FFFFAA;
+    border: 5px solid #000;
+    box-shadow: 15px 15px 0px #000;
+    border-radius: 0;
+}
+.theme-eco .card-back {
+    background: #FFFFFF;
+    border: 5px solid #000;
+    box-shadow: 15px 15px 0px #000;
+    border-radius: 0;
+}
+.theme-eco .card:not(.flipped):hover .card-inner {
+    transform: translateY(-5px) rotate(2deg);
+}
+.theme-eco header {
+    background: #FF1493;
+    border: 6px solid #000;
+    box-shadow: 15px 15px 0px #000;
+    border-radius: 0;
+    transform: rotate(-1.5deg);
+    animation: none;
+}
+.theme-eco .stat span {
+    color: #000000;
+    text-shadow: 2px 2px 0px #FFFFFF;
+}
 
-    .menu-content {
-        padding: 20px;
-        width: 90%;
-    }
+/* Overlays & Menus */
+.overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: all 0.5s ease;
+}
 
-    .theme-options {
-        flex-direction: column;
-        gap: 8px;
-    }
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.1);
+}
+
+.menu-content {
+    background: var(--surface);
+    padding: 4.5rem;
+    border-radius: 3.5rem;
+    text-align: center;
+    color: var(--text);
+    max-width: 550px;
+    width: 90%;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-content h1 {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    color: #F5F3F0; /* Higher contrast light bone color */
+    line-height: 1.1;
+}
+
+.theme-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-top: 2.5rem;
+}
+
+.theme-options button {
+    padding: 1.4rem;
+    font-size: 1.2rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    border-radius: 1.2rem;
+    background: var(--primary);
+    color: white;
+    transition: all 0.4s var(--transition-bounce);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Theme Selection Button Customizations */
+.theme-options button[data-theme="zen"] {
+    background: #FFF9F0;
+    color: #3E2723;
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    text-transform: capitalize;
+    border: 1px solid #5D4037;
+    border-radius: 2rem 0.5rem;
+    letter-spacing: 0;
+}
+
+.theme-options button[data-theme="forest"] {
+    background: rgba(10, 25, 20, 0.8);
+    color: #00F5D4;
+    border: 1px solid #00F5D4;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0, 245, 212, 0.3);
+}
+
+.theme-options button[data-theme="eco"] {
+    background: #FF1493;
+    color: #FFD700;
+    border: 5px solid #000;
+    border-radius: 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    box-shadow: 8px 8px 0px #000;
+}
+
+.theme-options button:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    filter: brightness(1.1);
+}
+
+.theme-options button[data-theme="eco"]:hover {
+    box-shadow: 4px 4px 0px #000;
+    transform: translate(4px, 4px);
+}
+
+/* Next Level Button Styling */
+#next-level-btn {
+    margin-top: 2rem;
+    padding: 1.5rem 3rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5rem;
+    background: linear-gradient(135deg, var(--primary), #FFD700);
+    color: white;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    transition: all 0.3s var(--transition-bounce);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#next-level-btn::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: 0.5s;
+    z-index: -1;
+}
+
+#next-level-btn:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+}
+
+#next-level-btn:hover::before {
+    left: 100%;
+}
+
+.theme-eco #next-level-btn {
+    background: #7FFF00;
+    color: #000;
+    border: 5px solid #000;
+    border-radius: 0;
+    box-shadow: 10px 10px 0px #000;
+}
+
+.theme-eco #next-level-btn:hover {
+    box-shadow: 5px 5px 0px #000;
+    transform: translate(5px, 5px);
 }
 
 /* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes card-appear {
+    from { opacity: 0; transform: scale(0.5) translateY(50px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 #game-board .card {
-    animation: fadeIn 0.5s ease backwards;
+    animation: card-appear 0.6s var(--transition-bounce) backwards;
 }
 
-/* Add stagger effect for cards appearance */
-#game-board .card:nth-child(1) { animation-delay: 0.05s; }
-#game-board .card:nth-child(2) { animation-delay: 0.1s; }
-#game-board .card:nth-child(3) { animation-delay: 0.15s; }
-#game-board .card:nth-child(4) { animation-delay: 0.20s; }
-#game-board .card:nth-child(5) { animation-delay: 0.25s; }
-#game-board .card:nth-child(6) { animation-delay: 0.30s; }
-#game-board .card:nth-child(7) { animation-delay: 0.35s; }
-#game-board .card:nth-child(8) { animation-delay: 0.40s; }
-#game-board .card:nth-child(9) { animation-delay: 0.45s; }
-#game-board .card:nth-child(10) { animation-delay: 0.50s; }
-#game-board .card:nth-child(11) { animation-delay: 0.55s; }
-#game-board .card:nth-child(12) { animation-delay: 0.60s; }
-#game-board .card:nth-child(13) { animation-delay: 0.65s; }
-#game-board .card:nth-child(14) { animation-delay: 0.70s; }
-#game-board .card:nth-child(15) { animation-delay: 0.75s; }
-#game-board .card:nth-child(16) { animation-delay: 0.80s; }
-#game-board .card:nth-child(17) { animation-delay: 0.85s; }
-#game-board .card:nth-child(18) { animation-delay: 0.90s; }
-#game-board .card:nth-child(19) { animation-delay: 0.95s; }
-#game-board .card:nth-child(20) { animation-delay: 1.00s; }
-#game-board .card:nth-child(21) { animation-delay: 1.05s; }
-#game-board .card:nth-child(22) { animation-delay: 1.10s; }
-#game-board .card:nth-child(23) { animation-delay: 1.15s; }
-#game-board .card:nth-child(24) { animation-delay: 1.20s; }
+/* Responsive Scaling */
+@media (max-width: 768px) {
+    #game-container {
+        padding: 1rem;
+        height: 100vh;
+    }
+    header {
+        padding: 1rem 1.5rem;
+        border-radius: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .stat span {
+        font-size: 1.4rem;
+    }
+    #game-board {
+        gap: 0.8rem;
+    }
+    .card-front, .card-back {
+        font-size: 2.5rem;
+        border-radius: 1.2rem;
+    }
+    .card-back {
+        font-size: 4rem;
+    }
+    .menu-content {
+        padding: 2.5rem 1.5rem;
+    }
+    .menu-content h1 {
+        font-size: 2.5rem;
+    }
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper // OS-X</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Wgrywamy stylowe, techniczne fonty zamiast generycznego Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="ambient-light"></div>
+    <div class="ambient-light light-2"></div>
+
+    <main class="app-wrapper">
+        <header class="top-bar">
+            <div class="brand">
+                <span class="logo">MN-SWP</span>
+                <span class="version">v.0.9</span>
+            </div>
+            <div class="controls">
+                <select id="difficulty" class="cyber-select">
+                    <option value="beginner">SECURITY: LOW (9x9)</option>
+                    <option value="intermediate">SECURITY: MED (16x16)</option>
+                    <option value="expert">SECURITY: MAX (30x16)</option>
+                </select>
+            </div>
+        </header>
+
+        <section class="game-core">
+            <div class="hud">
+                <div class="hud-panel">
+                    <span class="hud-label">MINES</span>
+                    <div class="counter" id="mine-counter">010</div>
+                </div>
+                
+                <button class="action-btn" id="reset-btn">
+                    <div class="btn-inner">SCAN</div>
+                </button>
+                
+                <div class="hud-panel">
+                    <span class="hud-label">TIME_MS</span>
+                    <div class="counter" id="timer">000</div>
+                </div>
+            </div>
+
+            <div class="board-container">
+                <div class="board" id="board"></div>
+            </div>
+        </section>
+        
+        <footer class="bottom-bar">
+            <span>SYS.STATUS: <span class="status-indicator">ONLINE</span></span>
+            <span>ENGAGE TO DECRYPT</span>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

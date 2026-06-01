@@ -9,7 +9,11 @@ class MemoryGame {
         this.seconds = 0;
         this.isLocked = false;
 
-        this.emojis = ['🌿', '🦊', '🌻', '🦉', '🍄', '🦋', '🌲', '🐿️', '🦌', '🐻', '🌸', '🐝', '🐞', '🍃', '🍎', '🍐'];
+        this.emojis = [
+            '🌿', '🦊', '🌻', '🦉', '🍄', '🦋', '🌲', '🐿️', '🦌', '🐻', 
+            '🌸', '🐝', '🐞', '🍃', '🍎', '🍐', '🦉', '🐦', '🌳', '🌺',
+            '🐇', '🦔', '🐸', '🐢', '🦢', '🪻', '🌵', '🥥', '🥭', '🍍'
+        ];
         
         this.board = document.getElementById('game-board');
         this.setupEventListeners();

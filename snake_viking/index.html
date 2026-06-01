@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jörmungandr - Nordycki Wąż</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-wrapper">
+        <header class="game-header">
+            <h1>JÖRMUNGANDR</h1>
+            <p class="subtitle">The Midgard Serpent</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-box">
+                <span>ZEBRANE RUNY</span>
+                <span id="score">0</span>
+            </div>
+            <div class="stat-box">
+                <span>REKORD</span>
+                <span id="high-score">0</span>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas" width="500" height="500"></canvas>
+            <div id="game-over-screen" class="overlay hidden">
+                <h2>VALHALLA CZEKA</h2>
+                <p>Wąż pożarł samego siebie lub uderzył w skały fiordu.</p>
+                <button id="restart-btn">Rozpocznij nową sagę</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
