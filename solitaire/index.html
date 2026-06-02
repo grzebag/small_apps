@@ -346,35 +346,57 @@
             const el = e.currentTarget;
             if (el.dataset.source === 'stock') {
                 e.preventDefault();
+                e.stopPropagation();
                 const now = Date.now();
                 if (now - lastTapTime < 300) {} else { drawFromStock(); }
                 lastTapTime = now; return;
             }
             if (el.dataset.faceup !== 'true') return;
+            
             e.preventDefault(); 
+            e.stopPropagation(); // Stop bubbling to parent cards in the stack
+            
             const now = Date.now(), touch = e.touches[0];
             if (now - lastTapTime < 300) { autoMove({ source: el.dataset.source, col: parseInt(el.dataset.col), idx: parseInt(el.dataset.idx) }); lastTapTime = 0; return; }
             lastTapTime = now;
+            
             touchTarget = el; touchData = { source: el.dataset.source, col: parseInt(el.dataset.col), idx: parseInt(el.dataset.idx) };
             const rect = el.getBoundingClientRect();
             dragOffset = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
             dragStartPos = { x: rect.left, y: rect.top };
+            
             draggingCards = [el];
-            if (touchData.source === 'tableau') { let child = el.firstElementChild; while (child && child.classList.contains('card')) { draggingCards.push(child); child = child.firstElementChild; } }
+            if (touchData.source === 'tableau') { 
+                let child = el.firstElementChild; 
+                while (child && child.classList.contains('card')) { 
+                    draggingCards.push(child); 
+                    child = child.firstElementChild; 
+                } 
+            }
             draggingCards.forEach(card => card.classList.add('dragging'));
             updateDragPosition(touch.clientX, touch.clientY);
         }
 
         function updateDragPosition(x, y) {
             if (!touchTarget) return;
-            touchTarget.style.position = 'fixed'; touchTarget.style.left = (x - dragOffset.x) + 'px'; touchTarget.style.top = (y - dragOffset.y) + 'px'; touchTarget.style.pointerEvents = 'none';
+            touchTarget.style.position = 'fixed'; 
+            touchTarget.style.left = (x - dragOffset.x) + 'px'; 
+            touchTarget.style.top = (y - dragOffset.y) + 'px'; 
+            touchTarget.style.pointerEvents = 'none';
+            touchTarget.style.zIndex = '9999';
         }
 
-        function onTouchMove(e) { if (!touchTarget) return; e.preventDefault(); updateDragPosition(e.touches[0].clientX, e.touches[0].clientY); }
+        function onTouchMove(e) { 
+            if (!touchTarget) return; 
+            e.preventDefault(); 
+            e.stopPropagation();
+            updateDragPosition(e.touches[0].clientX, e.touches[0].clientY); 
+        }
 
         function onTouchEnd(e) {
             if (!touchData || !touchTarget) { cleanupTouch(); return; }
             e.preventDefault();
+            e.stopPropagation();
             const touch = e.changedTouches[0];
             const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.card, .pile');
             let moveSuccessful = false;
