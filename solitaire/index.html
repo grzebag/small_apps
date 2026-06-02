@@ -11,6 +11,7 @@
     <meta name="theme-color" content="#076324">
     <link rel="manifest" href="manifest.json">
     
+    <link rel="icon" href="icon.png" sizes="32x32" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
@@ -333,40 +334,44 @@
             const el = document.createElement('div');
             el.classList.add('card');
             el.dataset.id = card.id; el.dataset.source = source; el.dataset.col = col; el.dataset.idx = idx; el.dataset.faceup = card.faceUp;
-            if (card.faceUp) { el.style.backgroundImage = `url('${getCardSVG(card.rank, card.suit)}')`; el.draggable = true; } 
-            else { el.style.backgroundImage = `url('${cardBackURI}')`; el.draggable = false; }
-            el.addEventListener('dragstart', onDragStart); el.addEventListener('dragover', onDragOver); el.addEventListener('drop', onDrop); el.addEventListener('dblclick', onDblClick);
-            el.addEventListener('touchstart', onTouchStart, { passive: false }); el.addEventListener('touchmove', onTouchMove, { passive: false }); el.addEventListener('touchend', onTouchEnd, { passive: false });
+            if (card.faceUp) { el.style.backgroundImage = `url('${getCardSVG(card.rank, card.suit)}')`; } 
+            else { el.style.backgroundImage = `url('${cardBackURI}')`; }
+            el.draggable = false; // Disable native drag and drop to use our custom pointer events
+            el.addEventListener('dblclick', onDblClick);
+            el.addEventListener('pointerdown', onPointerDown);
             return el;
         }
 
-        let touchData = null, touchTarget = null, lastTapTime = 0, draggingCards = [], dragOffset = { x: 0, y: 0 }, dragStartPos = { x: 0, y: 0 };
+        let dragData = null, dragTarget = null, lastTapTime = 0, draggingCards = [], dragOffset = { x: 0, y: 0 }, dragStartPos = { x: 0, y: 0 };
+        let autoMovePending = false;
 
-        function onTouchStart(e) {
+        function onPointerDown(e) {
+            // Only allow left mouse button or touch
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            
             const el = e.currentTarget;
             if (el.dataset.source === 'stock') {
                 e.preventDefault();
                 e.stopPropagation();
-                const now = Date.now();
-                if (now - lastTapTime < 300) {} else { drawFromStock(); }
-                lastTapTime = now; return;
+                drawFromStock(); return;
             }
             if (el.dataset.faceup !== 'true') return;
             
             e.preventDefault(); 
             e.stopPropagation(); // Stop bubbling to parent cards in the stack
             
-            const now = Date.now(), touch = e.touches[0];
+            // Handle double-tap or double-click for unified behavior
+            const now = Date.now();
             if (now - lastTapTime < 300) { autoMove({ source: el.dataset.source, col: parseInt(el.dataset.col), idx: parseInt(el.dataset.idx) }); lastTapTime = 0; return; }
             lastTapTime = now;
             
-            touchTarget = el; touchData = { source: el.dataset.source, col: parseInt(el.dataset.col), idx: parseInt(el.dataset.idx) };
+            dragTarget = el; dragData = { source: el.dataset.source, col: parseInt(el.dataset.col), idx: parseInt(el.dataset.idx) };
             const rect = el.getBoundingClientRect();
-            dragOffset = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+            dragOffset = { x: e.clientX - rect.left, y: e.clientY - rect.top };
             dragStartPos = { x: rect.left, y: rect.top };
             
             draggingCards = [el];
-            if (touchData.source === 'tableau') { 
+            if (dragData.source === 'tableau') { 
                 let child = el.firstElementChild; 
                 while (child && child.classList.contains('card')) { 
                     draggingCards.push(child); 
@@ -374,49 +379,57 @@
                 } 
             }
             draggingCards.forEach(card => card.classList.add('dragging'));
-            updateDragPosition(touch.clientX, touch.clientY);
+            updateDragPosition(e.clientX, e.clientY);
+            
+            // Attach move and up events to window to track them outside the element
+            window.addEventListener('pointermove', onPointerMove, { passive: false });
+            window.addEventListener('pointerup', onPointerUp);
+            window.addEventListener('pointercancel', onPointerUp);
         }
 
         function updateDragPosition(x, y) {
-            if (!touchTarget) return;
-            touchTarget.style.position = 'fixed'; 
-            touchTarget.style.left = (x - dragOffset.x) + 'px'; 
-            touchTarget.style.top = (y - dragOffset.y) + 'px'; 
-            touchTarget.style.pointerEvents = 'none';
-            touchTarget.style.zIndex = '9999';
+            if (!dragTarget) return;
+            dragTarget.style.position = 'fixed'; 
+            dragTarget.style.left = (x - dragOffset.x) + 'px'; 
+            dragTarget.style.top = (y - dragOffset.y) + 'px'; 
+            dragTarget.style.pointerEvents = 'none'; // Allows checking elements underneath
+            dragTarget.style.zIndex = '9999';
         }
 
-        function onTouchMove(e) { 
-            if (!touchTarget) return; 
+        function onPointerMove(e) { 
+            if (!dragTarget) return; 
             e.preventDefault(); 
             e.stopPropagation();
-            updateDragPosition(e.touches[0].clientX, e.touches[0].clientY); 
+            updateDragPosition(e.clientX, e.clientY); 
         }
 
-        function onTouchEnd(e) {
-            if (!touchData || !touchTarget) { cleanupTouch(); return; }
+        function onPointerUp(e) {
+            if (!dragData || !dragTarget) { cleanupDrag(); return; }
             e.preventDefault();
             e.stopPropagation();
-            const touch = e.changedTouches[0];
-            const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.card, .pile');
+            
+            const dropTarget = document.elementFromPoint(e.clientX, e.clientY)?.closest('.card, .pile');
             let moveSuccessful = false;
             if (dropTarget) {
                 const targetSource = dropTarget.dataset.source, targetCol = parseInt(dropTarget.dataset.col);
-                if ((targetSource === 'tableau' || targetSource === 'foundation')) { moveSuccessful = handleMove(touchData, targetSource, targetCol); }
+                if ((targetSource === 'tableau' || targetSource === 'foundation')) { moveSuccessful = handleMove(dragData, targetSource, targetCol); }
             }
             if (!moveSuccessful) {
-                touchTarget.classList.add('animating'); touchTarget.style.left = dragStartPos.x + 'px'; touchTarget.style.top = dragStartPos.y + 'px';
-                setTimeout(() => { cleanupTouch(); renderBoard(); }, 300);
-            } else { cleanupTouch(); }
+                cleanupDrag(); renderBoard();
+            } else { cleanupDrag(); }
         }
 
-        function cleanupTouch() {
-            if (touchTarget) { touchTarget.classList.remove('dragging', 'animating'); touchTarget.style.position = ''; touchTarget.style.left = ''; touchTarget.style.top = ''; touchTarget.style.pointerEvents = ''; }
+        function cleanupDrag() {
+            if (dragTarget) { dragTarget.classList.remove('dragging', 'animating'); dragTarget.style.position = ''; dragTarget.style.left = ''; dragTarget.style.top = ''; dragTarget.style.pointerEvents = ''; dragTarget.style.zIndex = ''; }
             draggingCards.forEach(card => card.classList.remove('dragging', 'animating'));
-            touchData = null; touchTarget = null; draggingCards = [];
+            dragData = null; dragTarget = null; draggingCards = [];
+            window.removeEventListener('pointermove', onPointerMove);
+            window.removeEventListener('pointerup', onPointerUp);
+            window.removeEventListener('pointercancel', onPointerUp);
         }
 
         function autoMove(drag) {
+            if (autoMovePending) return;
             let draggedCards = [];
             if (drag.source === 'tableau') draggedCards = state.tableaus[drag.col].slice(drag.idx);
             else if (drag.source === 'waste') draggedCards = [state.waste[state.waste.length - 1]];
@@ -429,20 +442,46 @@
                 let isValid = false;
                 if (fCol.length === 0) { if (movingCard.value === 1) isValid = true; } 
                 else { const topCard = fCol[fCol.length - 1]; if (topCard.suit === movingCard.suit && movingCard.value === topCard.value + 1) isValid = true; }
-                if (isValid) { animateToFoundation(drag, f); return; }
+                if (isValid) { autoMovePending = true; animateToFoundation(drag, f); return; }
             }
         }
 
         function animateToFoundation(drag, fIdx) {
             const sourceEl = document.querySelector(`.card[data-source="${drag.source}"][data-col="${drag.col}"][data-idx="${drag.idx}"]`);
-            if (!sourceEl) { handleMove(drag, 'foundation', fIdx); return; }
-            const targetEl = document.getElementById(`foundation-${fIdx}`), startRect = sourceEl.getBoundingClientRect(), endRect = targetEl.getBoundingClientRect();
-            const clone = sourceEl.cloneNode(true);
-            clone.style.position = 'fixed'; clone.style.left = startRect.left + 'px'; clone.style.top = startRect.top + 'px'; clone.style.zIndex = '1000'; clone.classList.add('animating');
-            document.body.appendChild(clone);
-            sourceEl.style.visibility = 'hidden';
-            requestAnimationFrame(() => { clone.style.left = endRect.left + 'px'; clone.style.top = endRect.top + 'px'; });
-            setTimeout(() => { document.body.removeChild(clone); handleMove(drag, 'foundation', fIdx); }, 300);
+            if (!sourceEl) { autoMovePending = false; handleMove(drag, 'foundation', fIdx); return; }
+            const targetEl = document.getElementById(`foundation-${fIdx}`);
+            // Clear any viewport-coordinate inline styles left by a previous drag abort
+            // (first click of double-click triggers drag, pointerup sets viewport coords as
+            //  parent-relative left/top, which would corrupt getBoundingClientRect)
+            sourceEl.style.left = '';
+            sourceEl.style.top = '';
+            void sourceEl.offsetHeight;
+            const startRect = sourceEl.getBoundingClientRect();
+            const endRect = targetEl.getBoundingClientRect();
+            // Remove card from its nested parent so pile shows the underlying card
+            sourceEl.remove();
+            sourceEl.classList.remove('dragging');
+            // Position card slightly above the pile (lift-off) with slight scale
+            sourceEl.style.position = 'fixed';
+            sourceEl.style.left = startRect.left + 'px';
+            sourceEl.style.top = (startRect.top - 20) + 'px';
+            sourceEl.style.transform = 'scale(1.06)';
+            sourceEl.style.zIndex = '1000';
+            sourceEl.style.pointerEvents = 'none';
+            sourceEl.style.margin = '0';
+            document.body.appendChild(sourceEl);
+            // Force browser layout so start position is registered
+            void sourceEl.offsetHeight;
+            sourceEl.classList.add('animating');
+            // Fly to foundation, settling scale back to normal
+            sourceEl.style.left = endRect.left + 'px';
+            sourceEl.style.top = endRect.top + 'px';
+            sourceEl.style.transform = 'scale(1)';
+            setTimeout(() => {
+                sourceEl.remove();
+                handleMove(drag, 'foundation', fIdx);
+                autoMovePending = false;
+            }, 300);
         }
 
         function renderBoard() {
@@ -466,24 +505,11 @@
             renderBoard();
         }
 
-        document.getElementById('stock').addEventListener('click', (e) => { if (e.pointerType === 'touch') return; drawFromStock(); });
-        document.getElementById('stock').addEventListener('touchstart', (e) => { if (state.stock.length === 0) { e.preventDefault(); drawFromStock(); } }, { passive: false });
+        document.getElementById('stock').addEventListener('pointerdown', (e) => { 
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            if (state.stock.length === 0) { e.preventDefault(); drawFromStock(); } 
+        });
         document.getElementById('reset-btn').addEventListener('click', initGame);
-
-        function onDragStart(e) {
-            if (e.target.dataset.faceup !== 'true') { e.preventDefault(); return; }
-            const data = { source: e.target.dataset.source, col: parseInt(e.target.dataset.col), idx: parseInt(e.target.dataset.idx) };
-            e.dataTransfer.setData('text/plain', JSON.stringify(data)); e.dataTransfer.effectAllowed = 'move'; e.stopPropagation();
-        }
-        function onDragOver(e) { e.preventDefault(); }
-        function onDrop(e) {
-            e.preventDefault(); e.stopPropagation();
-            let targetEl = e.target.closest('.card, .pile'); if (!targetEl) return;
-            const targetSource = targetEl.dataset.source; if (targetSource !== 'tableau' && targetSource !== 'foundation') return;
-            const targetCol = parseInt(targetEl.dataset.col), dataString = e.dataTransfer.getData('text/plain'); if (!dataString) return;
-            const dragData = JSON.parse(dataString); if (dragData.source === targetSource && dragData.col === targetCol) return;
-            handleMove(dragData, targetSource, targetCol);
-        }
 
         function handleMove(drag, targetSource, targetCol) {
             let draggedCards = [];
@@ -530,7 +556,6 @@
             }());
         }
         document.getElementById('play-again-btn').addEventListener('click', () => { document.getElementById('victory-screen').classList.add('hidden'); initGame(); });
-        document.querySelectorAll('.pile').forEach(pile => { pile.addEventListener('dragover', onDragOver); pile.addEventListener('drop', onDrop); });
         
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
