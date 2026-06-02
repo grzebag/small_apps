@@ -224,6 +224,7 @@
             text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
         }
     </style>
+    <script src="faceData.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -269,36 +270,70 @@
 
     <script>
         // JS from script.js
+        function getPipLayout(rank, symbol) {
+            const rankValue = rank === 'A' ? 1 : Number(rank);
+            const pipScale = rank === 'A' ? 0.55 : (rankValue >= 9 ? 0.24 : (rankValue >= 6 ? 0.26 : 0.3));
+            const layouts = {
+                A: [{ x: 50, y: 70, scale: 0.55 }],
+                2: [{ x: 50, y: 40 }, { x: 50, y: 100 }],
+                3: [{ x: 50, y: 38 }, { x: 50, y: 70 }, { x: 50, y: 102 }],
+                4: [{ x: 34, y: 40 }, { x: 66, y: 40 }, { x: 34, y: 100 }, { x: 66, y: 100 }],
+                5: [{ x: 34, y: 40 }, { x: 66, y: 40 }, { x: 50, y: 70 }, { x: 34, y: 100 }, { x: 66, y: 100 }],
+                6: [{ x: 34, y: 36 }, { x: 66, y: 36 }, { x: 34, y: 70 }, { x: 66, y: 70 }, { x: 34, y: 104 }, { x: 66, y: 104 }],
+                7: [{ x: 34, y: 36 }, { x: 66, y: 36 }, { x: 50, y: 52 }, { x: 34, y: 70 }, { x: 66, y: 70 }, { x: 34, y: 104 }, { x: 66, y: 104 }],
+                8: [{ x: 34, y: 36 }, { x: 66, y: 36 }, { x: 50, y: 52 }, { x: 34, y: 70 }, { x: 66, y: 70 }, { x: 50, y: 88 }, { x: 34, y: 104 }, { x: 66, y: 104 }],
+                9: [{ x: 34, y: 36 }, { x: 66, y: 36 }, { x: 34, y: 56 }, { x: 66, y: 56 }, { x: 50, y: 70 }, { x: 34, y: 84 }, { x: 66, y: 84 }, { x: 34, y: 104 }, { x: 66, y: 104 }],
+                10: [{ x: 34, y: 36 }, { x: 66, y: 36 }, { x: 50, y: 48 }, { x: 34, y: 56 }, { x: 66, y: 56 }, { x: 34, y: 84 }, { x: 66, y: 84 }, { x: 50, y: 92 }, { x: 34, y: 104 }, { x: 66, y: 104 }]
+            };
+
+            return (layouts[rank] || []).map(function(pip) {
+                const rotate = pip.rotate !== undefined ? pip.rotate : (pip.y > 70 ? 180 : 0);
+                const scale = pip.scale || pipScale;
+                return `<g transform="translate(${pip.x}, ${pip.y}) rotate(${rotate}) scale(${scale}) translate(-50, -50)">${symbol}</g>`;
+            }).join('');
+        }
+
         function getCardSVG(rank, suit) {
             let color1, color2, suitId;
-            if (suit === '♥') { color1 = '#ff4b6a'; color2 = '#d63031'; suitId = 'H'; }
-            else if (suit === '♦') { color1 = '#ff7f50'; color2 = '#e84118'; suitId = 'D'; }
-            else if (suit === '♣') { color1 = '#2f3640'; color2 = '#192a56'; suitId = 'C'; }
-            else if (suit === '♠') { color1 = '#353b48'; color2 = '#2f3640'; suitId = 'S'; }
+            if (suit === '♥') { color1 = '#e74c3c'; color2 = '#c0392b'; suitId = 'H'; }
+            else if (suit === '♦') { color1 = '#e67e22'; color2 = '#d35400'; suitId = 'D'; }
+            else if (suit === '♣') { color1 = '#1a1a2e'; color2 = '#0f0f1a'; suitId = 'C'; }
+            else if (suit === '♠') { color1 = '#1a1a2e'; color2 = '#0f0f1a'; suitId = 'S'; }
 
             let symbol = '';
             const fill = `url(#grad-${suitId})`;
             if (suit === '♥') symbol = `<path d="M50 85 C 50 85, 15 50, 15 30 A 18 18 0 0 1 50 30 A 18 18 0 0 1 85 30 C 85 50, 50 85, 50 85 Z" fill="${fill}"/>`;
             else if (suit === '♦') symbol = `<polygon points="50,15 85,50 50,85 15,50" fill="${fill}"/>`;
-            else if (suit === '♣') symbol = `<circle cx="50" cy="35" r="18" fill="${fill}"/><circle cx="30" cy="60" r="18" fill="${fill}"/><circle cx="70" cy="60" r="18" fill="${fill}"/><path d="M50 50 L 65 90 L 35 90 Z" fill="${fill}"/>`;
-            else if (suit === '♠') symbol = `<path d="M50 15 C 50 15, 85 50, 85 70 A 18 18 0 0 1 50 70 A 18 18 0 0 1 15 70 C 15 50, 50 15, 50 15 Z M50 65 L 65 95 L 35 95 Z" fill="${fill}"/>`;
+            else if (suit === '♣') symbol = `<circle cx="50" cy="35" r="18" fill="${fill}"/><circle cx="29" cy="60" r="18" fill="${fill}"/><circle cx="71" cy="60" r="18" fill="${fill}"/><path d="M50 50 L 67 92 L 33 92 Z" fill="${fill}"/>`;
+            else if (suit === '♠') symbol = `<path d="M50 15 C 50 15, 85 50, 85 70 A 18 18 0 0 1 50 70 A 18 18 0 0 1 15 70 C 15 50, 50 15, 50 15 Z M50 65 L 67 97 L 33 97 Z" fill="${fill}"/>`;
+
+            const isFace = ['J', 'Q', 'K'].includes(rank);
+            const cornerRankX = rank === '10' ? 17 : 14;
+            const cornerSuitY = 26;
+            const cornerSuitScale = 0.132;
+            const cornerSuitX = cornerRankX - (50 * cornerSuitScale);
+            let centerContent = '';
+            if (isFace && typeof faceData !== 'undefined') {
+                centerContent = faceData[rank + suitId] || '';
+            }
 
             const svg = `
-            <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <defs>
                     <linearGradient id="grad-${suitId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color1}"/><stop offset="100%" stop-color="${color2}"/></linearGradient>
-                    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#fdfbfb"/></linearGradient>
+                    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f8f9fa"/></linearGradient>
                     <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f9d423"/><stop offset="100%" stop-color="#ff4e50"/></linearGradient>
-                    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.4" flood-color="${color2}"/></filter>
+                    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.35" flood-color="${color2}"/></filter>
                 </defs>
-                <rect width="100" height="140" rx="6" fill="url(#bgGrad)" stroke="#dcdde1" stroke-width="1"/>
-                <rect width="90" height="130" x="5" y="5" rx="4" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.6"/>
-                <text x="16" y="28" text-anchor="middle" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="url(#grad-${suitId})">${rank}</text>
-                <g transform="translate(4, 32) scale(0.24)">${symbol}</g>
-                <g transform="translate(50, 70) scale(0.65) translate(-50, -50)" filter="url(#drop)">${symbol}</g>
+                <rect width="100" height="140" rx="6" fill="url(#bgGrad)" stroke="#dcdde1" stroke-width="0.5"/>
+                <rect width="96" height="136" x="2" y="2" rx="5" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+                <rect width="90" height="130" x="5" y="5" rx="4" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.55"/>
+                ${isFace ? centerContent : getPipLayout(rank, symbol)}
+                <text x="${cornerRankX}" y="22" text-anchor="middle" font-family="Playfair Display, serif" font-size="21" font-weight="800" fill="url(#grad-${suitId})">${rank}</text>
+                <g transform="translate(${cornerSuitX}, ${cornerSuitY}) scale(${cornerSuitScale})">${symbol}</g>
                 <g transform="translate(100, 140) rotate(180)">
-                    <text x="16" y="28" text-anchor="middle" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="url(#grad-${suitId})">${rank}</text>
-                    <g transform="translate(4, 32) scale(0.24)">${symbol}</g>
+                    <text x="${cornerRankX}" y="22" text-anchor="middle" font-family="Playfair Display, serif" font-size="21" font-weight="800" fill="url(#grad-${suitId})">${rank}</text>
+                    <g transform="translate(${cornerSuitX}, ${cornerSuitY}) scale(${cornerSuitScale})">${symbol}</g>
                 </g>
             </svg>`;
             return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.trim())}`;
@@ -307,12 +342,35 @@
         const cardBackURI = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
         <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <linearGradient id="backBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#192a56"/><stop offset="100%" stop-color="#273c75"/></linearGradient>
-                <linearGradient id="goldLines" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#e67e22"/></linearGradient>
-                <pattern id="patBack" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 10 L20 10 M10 0 L10 20" stroke="url(#goldLines)" stroke-width="1.5" opacity="0.3"/><circle cx="10" cy="10" r="3" fill="url(#goldLines)" opacity="0.5"/></pattern>
+                <linearGradient id="backBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#b00505"/><stop offset="100%" stop-color="#5e0404"/></linearGradient>
+                <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f1c40f"/><stop offset="40%" stop-color="#f39c12"/><stop offset="60%" stop-color="#e67e22"/><stop offset="100%" stop-color="#f1c40f"/></linearGradient>
+                <linearGradient id="innerShine" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="rgba(255,255,255,0.08)"/><stop offset="100%" stop-color="rgba(0,0,0,0.15)"/></linearGradient>
+                <pattern id="patBack" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <rect width="24" height="24" fill="none"/>
+                    <path d="M0 12 L24 12 M12 0 L12 24" stroke="url(#goldGrad)" stroke-width="0.6" opacity="0.08"/>
+                    <circle cx="12" cy="12" r="1.5" fill="url(#goldGrad)" opacity="0.15"/>
+                </pattern>
+                <pattern id="dotPat" width="8" height="8" patternUnits="userSpaceOnUse">
+                    <circle cx="4" cy="4" r="0.8" fill="url(#goldGrad)" opacity="0.06"/>
+                </pattern>
             </defs>
             <rect width="100" height="140" rx="6" fill="#fff" stroke="#dcdde1" stroke-width="1"/>
-            <rect width="90" height="130" x="5" y="5" rx="4" fill="url(#backBg)"/><rect width="90" height="130" x="5" y="5" rx="4" fill="url(#patBack)"/>
+            <rect width="90" height="130" x="5" y="5" rx="4" fill="url(#backBg)"/>
+            <rect width="90" height="130" x="5" y="5" rx="4" fill="url(#patBack)"/>
+            <rect width="90" height="130" x="5" y="5" rx="4" fill="url(#dotPat)"/>
+            <rect width="90" height="130" x="5" y="5" rx="4" fill="url(#innerShine)"/>
+            <rect width="82" height="122" x="9" y="9" rx="3" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.5"/>
+            <rect width="78" height="118" x="11" y="11" rx="2" fill="none" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.25"/>
+            <polygon points="50,22 82,70 50,118 18,70" fill="none" stroke="url(#goldGrad)" stroke-width="1.8" opacity="0.55"/>
+            <polygon points="50,30 74,70 50,110 26,70" fill="none" stroke="url(#goldGrad)" stroke-width="1" opacity="0.3"/>
+            <polygon points="50,38 66,70 50,102 34,70" fill="none" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.15"/>
+            <circle cx="50" cy="70" r="14" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.45"/>
+            <circle cx="50" cy="70" r="8" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.3"/>
+            <circle cx="50" cy="70" r="4" fill="url(#goldGrad)" opacity="0.35"/>
+            <path d="M14 18 L18 14" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <path d="M86 18 L82 14" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <path d="M14 122 L18 126" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <path d="M86 122 L82 126" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
         </svg>`.trim())}`;
 
         const suits = ['♥', '♦', '♣', '♠'];
@@ -558,7 +616,7 @@
         document.getElementById('play-again-btn').addEventListener('click', () => { document.getElementById('victory-screen').classList.add('hidden'); initGame(); });
         
         // PWA Service Worker Registration
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && ['http:', 'https:'].includes(window.location.protocol)) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW error', err));
             });
