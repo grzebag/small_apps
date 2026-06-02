@@ -193,11 +193,16 @@ body, html {
     font-family: var(--font-data);
     font-weight: 700;
     font-size: 0.9rem;
-    padding: 12px 24px;
+    padding: 0 24px; /* Szerokość boczna */
+    height: 46px;    /* Stała wysokość dla wszystkich przycisków */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 12px;
     letter-spacing: 2px;
     transition: all 0.2s;
     backdrop-filter: blur(10px);
+    box-sizing: border-box;
 }
 
 .action-btn:hover .btn-inner {
@@ -214,6 +219,18 @@ body, html {
 .action-btn.win .btn-inner { color: var(--num-2); border-color: var(--num-2); box-shadow: 0 0 15px rgba(163, 230, 53, 0.3); }
 .action-btn.lose .btn-inner { color: var(--accent); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 
+.action-btn.active .btn-inner {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+    background: rgba(255, 42, 95, 0.1);
+}
+
+.flag-icon {
+    font-size: 1.2rem;
+    padding: 0 16px !important; /* Przywrócenie pierwotnej szerokości */
+}
+
 /* Board */
 .board-container {
     background: rgba(0, 0, 0, 0.4);
@@ -222,12 +239,14 @@ body, html {
     border: 1px solid rgba(255, 255, 255, 0.02);
     box-shadow: inset 0 10px 30px rgba(0,0,0,0.5);
     overflow: auto;
+    touch-action: none; /* Zapobiega scrollowaniu/zoomowaniu planszy */
 }
 
 .board {
     display: grid;
     gap: 3px;
     margin: 0 auto;
+    -webkit-touch-callout: none; /* Blokuje menu systemowe na iOS */
 }
 
 .cell {

@@ -42,10 +42,11 @@ function resetGame() {
         snake.push({x: startX, y: startY + i}); 
     }
     
+    // Start stationary
     dx = 0;
-    dy = -1;
+    dy = 0;
     nextDx = 0;
-    nextDy = -1;
+    nextDy = 0;
     gameSpeed = 8;
     
     obstacles = []; // Reset obstacles
@@ -72,13 +73,18 @@ function main(currentTime) {
 
     lastRenderTime = currentTime;
 
-    update();
+    // Only update (move) if game has started (direction is set)
+    if (nextDx !== 0 || nextDy !== 0) {
+        update();
+    }
     draw();
 }
 
 function update() {
     dx = nextDx;
     dy = nextDy;
+    
+    if (dx === 0 && dy === 0) return; // Still waiting for first move
     
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
@@ -171,6 +177,14 @@ function draw() {
     for (let i = 0; i < snake.length; i++) {
         drawSnakeSegment(snake[i].x, snake[i].y, i === 0);
     }
+
+    // Start hint
+    if (dx === 0 && dy === 0) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '20px MedievalSharp';
+        ctx.textAlign = 'center';
+        ctx.fillText('Dotknij lub naciśnij strzałkę', canvas.width / 2, canvas.height / 2 + 50);
+    }
 }
 
 function drawObstacles() {
@@ -262,6 +276,48 @@ function drawSnakeSegment(x, y, isHead) {
 function handleGameOver() {
     gameOverScreen.classList.remove('hidden');
 }
+
+// Mobile Controls
+document.getElementById('up-btn').addEventListener('touchstart', e => { e.preventDefault(); if (dy !== 1) { nextDx = 0; nextDy = -1; } });
+document.getElementById('down-btn').addEventListener('touchstart', e => { e.preventDefault(); if (dy !== -1) { nextDx = 0; nextDy = 1; } });
+document.getElementById('left-btn').addEventListener('touchstart', e => { e.preventDefault(); if (dx !== 1) { nextDx = -1; nextDy = 0; } });
+document.getElementById('right-btn').addEventListener('touchstart', e => { e.preventDefault(); if (dx !== -1) { nextDx = 1; nextDy = 0; } });
+
+// Mouse support for mobile buttons (for testing/hybrid)
+document.getElementById('up-btn').addEventListener('click', () => { if (dy !== 1) { nextDx = 0; nextDy = -1; } });
+document.getElementById('down-btn').addEventListener('click', () => { if (dy !== -1) { nextDx = 0; nextDy = 1; } });
+document.getElementById('left-btn').addEventListener('click', () => { if (dx !== 1) { nextDx = -1; nextDy = 0; } });
+document.getElementById('right-btn').addEventListener('click', () => { if (dx !== -1) { nextDx = 1; nextDy = 0; } });
+
+// Swipe Detection
+let touchStartX = 0;
+let touchStartY = 0;
+
+canvas.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+canvas.addEventListener('touchend', e => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const touchEndY = e.changedTouches[0].screenY;
+    
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+    
+    // Minimum distance to be considered a swipe
+    if (Math.abs(diffX) > 30 || Math.abs(diffY) > 30) {
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            // Horizontal
+            if (diffX > 0 && dx !== -1) { nextDx = 1; nextDy = 0; }
+            else if (diffX < 0 && dx !== 1) { nextDx = -1; nextDy = 0; }
+        } else {
+            // Vertical
+            if (diffY > 0 && dy !== -1) { nextDx = 0; nextDy = 1; }
+            else if (diffY < 0 && dy !== 1) { nextDx = 0; nextDy = -1; }
+        }
+    }
+}, { passive: true });
 
 // Input handling
 window.addEventListener('keydown', e => {

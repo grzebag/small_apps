@@ -129,6 +129,108 @@ header {
     line-height: 1;
 }
 
+.stat.best-time {
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+.stat.best-time span {
+    font-size: 1.2rem;
+}
+
+/* Combo Indicator */
+#combo-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2000;
+    text-align: center;
+}
+
+.combo-text {
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--primary);
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 4px 4px 0px #000;
+    animation: combo-pop 2s var(--transition-bounce) forwards;
+    display: none;
+}
+
+@keyframes combo-pop {
+    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+    20% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+    80% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1.5) rotate(0); opacity: 0; }
+}
+
+/* Stars Rating */
+.stars {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    font-size: 2.5rem;
+}
+
+.star {
+    color: #ccc;
+    text-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.star.active {
+    color: #FFD700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    animation: star-appear 0.5s var(--transition-bounce) both;
+}
+
+@keyframes star-appear {
+    from { transform: scale(0) rotate(-180deg); }
+    to { transform: scale(1) rotate(0); }
+}
+
+/* Stats Summary Overlay Styling */
+.stats-summary {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(0,0,0,0.05);
+    border-radius: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    text-align: left;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    color: var(--text);
+    opacity: 0.8;
+}
+
+.summary-item span:last-child {
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.summary-item.total {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(0,0,0,0.1);
+    font-size: 1.4rem;
+    opacity: 1;
+}
+
+.summary-item.total span:last-child {
+    color: #f39c12;
+    text-shadow: 0 0 10px rgba(243, 156, 18, 0.2);
+}
+
+.hidden {
+    display: none !important;
+}
+
 /* Game Board Grid Logic */
 #game-board {
     flex: 1;
@@ -148,6 +250,7 @@ header {
     position: relative;
     width: 100%;
     transition: transform 0.3s var(--transition-smooth);
+    touch-action: manipulation; /* Usuwa opóźnienie double-tap zoom */
 }
 
 .card:not(.flipped):hover {
@@ -160,6 +263,7 @@ header {
     height: 100%;
     transform-style: preserve-3d;
     transition: transform 0.6s var(--transition-smooth);
+    will-change: transform; /* Optymalizacja GPU dla animacji */
 }
 
 .card.flipped .card-inner {
@@ -362,6 +466,7 @@ header {
     transition: all 0.4s var(--transition-bounce);
     text-transform: uppercase;
     letter-spacing: 2px;
+    touch-action: manipulation;
 }
 
 /* Theme Selection Button Customizations */

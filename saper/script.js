@@ -13,11 +13,13 @@ let timerInterval = null;
 let timeElapsed = 0;
 let safeCellsRevealed = 0;
 let totalSafeCells = 0;
+let isFlagMode = false;
 
 const boardElement = document.getElementById('board');
 const mineCounterElement = document.getElementById('mine-counter');
 const timerElement = document.getElementById('timer');
 const resetBtn = document.getElementById('reset-btn');
+const flagModeBtn = document.getElementById('flag-mode-btn');
 const difficultySelect = document.getElementById('difficulty');
 
 function initGame() {
@@ -29,6 +31,8 @@ function initGame() {
     timeElapsed = 0;
     safeCellsRevealed = 0;
     totalSafeCells = (config.rows * config.cols) - config.mines;
+    isFlagMode = false;
+    flagModeBtn.classList.remove('active');
     
     updateMineCounter();
     updateTimerDisplay();
@@ -49,7 +53,8 @@ function initGame() {
                 isRevealed: false,
                 isFlagged: false,
                 neighborMines: 0,
-                element: document.createElement('div')
+                element: document.createElement('div'),
+                longPressTimer: null
             };
             
             cell.element.classList.add('cell');
@@ -67,10 +72,41 @@ function initGame() {
                 }
             });
             
-            cell.element.addEventListener('click', () => handleLeftClick(r, c));
+            cell.element.addEventListener('click', (e) => {
+                if (isFlagMode) {
+                    handleRightClick(r, c);
+                } else {
+                    handleLeftClick(r, c);
+                }
+            });
+
             cell.element.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 handleRightClick(r, c);
+            });
+
+            // Touch support for mobile
+            cell.element.addEventListener('touchstart', (e) => {
+                if (gameOver || cell.isRevealed) return;
+                
+                cell.longPressTimer = setTimeout(() => {
+                    handleRightClick(r, c);
+                    cell.longPressTimer = null;
+                }, 500);
+            }, { passive: true });
+
+            cell.element.addEventListener('touchend', (e) => {
+                if (cell.longPressTimer) {
+                    clearTimeout(cell.longPressTimer);
+                    cell.longPressTimer = null;
+                }
+            });
+
+            cell.element.addEventListener('touchmove', (e) => {
+                if (cell.longPressTimer) {
+                    clearTimeout(cell.longPressTimer);
+                    cell.longPressTimer = null;
+                }
             });
             
             boardElement.appendChild(cell.element);
@@ -253,6 +289,10 @@ function updateMineCounter() {
 
 // Event Listeners
 resetBtn.addEventListener('click', initGame);
+flagModeBtn.addEventListener('click', () => {
+    isFlagMode = !isFlagMode;
+    flagModeBtn.classList.toggle('active', isFlagMode);
+});
 difficultySelect.addEventListener('change', (e) => {
     currentDifficulty = e.target.value;
     initGame();
