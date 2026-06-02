@@ -12,9 +12,6 @@
     <link rel="manifest" href="manifest.json">
     
     <link rel="icon" href="icon.png" sizes="32x32" type="image/png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
     
     <style>
         /* CSS from styles.css */
@@ -23,7 +20,7 @@
             background-image: radial-gradient(circle at center, #0a8230 0%, #043813 100%);
             margin: 0;
             padding: 20px;
-            font-family: 'Lato', 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: white;
             min-height: 100vh;
             display: flex;
@@ -49,7 +46,7 @@
         h1 {
             margin: 0;
             font-size: 28px;
-            font-family: 'Playfair Display', serif;
+            font-family: Georgia, 'Times New Roman', serif;
             font-style: italic;
             font-weight: 900;
             color: #f1c40f;
@@ -65,7 +62,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-family: 'Lato', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             transition: all 0.2s;
             touch-action: manipulation;
         }
@@ -202,11 +199,11 @@
         .victory-ribbon {
             position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
             background: #e74c3c; color: white; padding: 8px 30px;
-            font-family: 'Playfair Display', serif; font-weight: bold;
+            font-family: Georgia, 'Times New Roman', serif; font-weight: bold;
             font-size: 14px; text-transform: uppercase; letter-spacing: 2px;
             border-radius: 4px; box-shadow: 0 5px 10px rgba(0,0,0,0.3);
         }
-        .victory-title { font-family: 'Playfair Display', serif; font-size: 48px; font-style: italic; font-weight: 900; color: #f1c40f; margin: 20px 0 10px 0; }
+        .victory-title { font-family: Georgia, 'Times New Roman', serif; font-size: 48px; font-style: italic; font-weight: 900; color: #f1c40f; margin: 20px 0 10px 0; }
         .victory-subtitle { font-size: 18px; color: #bdc3c7; margin-bottom: 30px; }
         .card-fan { position: relative; height: 120px; margin: 30px auto; display: flex; justify-content: center; align-items: center; }
         .decor-card {
@@ -218,6 +215,25 @@
         .decor-card.left { color: #2c3e50; transform: translateX(-40px) rotate(-15deg) translateY(10px); }
         .decor-card.center { color: #e74c3c; transform: translateX(0) rotate(0deg) scale(1.1); z-index: 3; }
         .decor-card.right { color: #e74c3c; transform: translateX(40px) rotate(15deg) translateY(10px); }
+        .confetti-piece {
+            position: fixed;
+            left: var(--x);
+            top: -12px;
+            width: var(--w);
+            height: var(--h);
+            background: var(--c);
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 10001;
+            opacity: 0.95;
+            transform: rotate(var(--r));
+            animation: confetti-fall var(--d) cubic-bezier(0.16, 0.8, 0.34, 1) forwards;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translate3d(0, -20px, 0) rotate(var(--r)); opacity: 1; }
+            55% { opacity: 1; }
+            100% { transform: translate3d(var(--dx), 105vh, 0) rotate(var(--rr)); opacity: 0; }
+        }
         .gold-btn {
             background: linear-gradient(to bottom, #f1c40f, #f39c12); color: #2c3e50;
             border: none; padding: 15px 40px; font-size: 18px; border-radius: 30px;
@@ -225,11 +241,10 @@
         }
     </style>
     <script src="faceData.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <div class="top-bar">
-        <h1>PASJANS KLONDIKE</h1>
+        <h1>Pasjans Klondike</h1>
         <button id="reset-btn">Nowa Gra</button>
     </div>
 
@@ -329,10 +344,10 @@
                 <rect width="96" height="136" x="2" y="2" rx="5" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
                 <rect width="90" height="130" x="5" y="5" rx="4" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.55"/>
                 ${isFace ? centerContent : getPipLayout(rank, symbol)}
-                <text x="${cornerRankX}" y="22" text-anchor="middle" font-family="Playfair Display, serif" font-size="21" font-weight="800" fill="url(#grad-${suitId})">${rank}</text>
+                <text x="${cornerRankX}" y="22" text-anchor="middle" font-family="Georgia Pro, Times New Roman, serif" font-size="21" font-weight="600" fill="url(#grad-${suitId})">${rank}</text>
                 <g transform="translate(${cornerSuitX}, ${cornerSuitY}) scale(${cornerSuitScale})">${symbol}</g>
                 <g transform="translate(100, 140) rotate(180)">
-                    <text x="${cornerRankX}" y="22" text-anchor="middle" font-family="Playfair Display, serif" font-size="21" font-weight="800" fill="url(#grad-${suitId})">${rank}</text>
+                    <text x="${cornerRankX}" y="22" text-anchor="middle" font-family="Georgia Pro, Times New Roman, serif" font-size="21" font-weight="600" fill="url(#grad-${suitId})">${rank}</text>
                     <g transform="translate(${cornerSuitX}, ${cornerSuitY}) scale(${cornerSuitScale})">${symbol}</g>
                 </g>
             </svg>`;
@@ -604,14 +619,31 @@
         }
 
         function checkWin() { if (state.foundations.every(f => f.length === 13)) { showVictoryScreen(); } }
+        function launchVictoryConfetti() {
+            const colors = ['#f1c40f', '#e74c3c', '#2980b9', '#2ecc71', '#ffffff', '#f39c12'];
+            const pieces = 120;
+            for (let i = 0; i < pieces; i++) {
+                setTimeout(() => {
+                    const piece = document.createElement('span');
+                    const size = 5 + Math.random() * 8;
+                    const wide = Math.random() > 0.45;
+                    piece.className = 'confetti-piece';
+                    piece.style.setProperty('--x', `${Math.random() * 100}vw`);
+                    piece.style.setProperty('--w', `${wide ? size * 1.8 : size}px`);
+                    piece.style.setProperty('--h', `${wide ? size * 0.65 : size}px`);
+                    piece.style.setProperty('--c', colors[Math.floor(Math.random() * colors.length)]);
+                    piece.style.setProperty('--r', `${Math.random() * 360}deg`);
+                    piece.style.setProperty('--rr', `${720 + Math.random() * 900}deg`);
+                    piece.style.setProperty('--dx', `${-120 + Math.random() * 240}px`);
+                    piece.style.setProperty('--d', `${1.8 + Math.random() * 1.8}s`);
+                    document.body.appendChild(piece);
+                    piece.addEventListener('animationend', () => piece.remove(), { once: true });
+                }, i * 18);
+            }
+        }
         function showVictoryScreen() {
             const victoryScreen = document.getElementById('victory-screen'); victoryScreen.classList.remove('hidden');
-            const duration = 3000, end = Date.now() + duration;
-            (function frame() {
-                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#f1c40f', '#e74c3c', '#2980b9'] });
-                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f1c40f', '#e74c3c', '#2980b9'] });
-                if (Date.now() < end) requestAnimationFrame(frame);
-            }());
+            launchVictoryConfetti();
         }
         document.getElementById('play-again-btn').addEventListener('click', () => { document.getElementById('victory-screen').classList.add('hidden'); initGame(); });
         

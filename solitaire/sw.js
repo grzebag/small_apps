@@ -1,11 +1,9 @@
-const CACHE_NAME = 'solitaire-v2';
+const CACHE_NAME = 'solitaire-v3';
 const ASSETS = [
   './',
   './index.html',
   './faceData.js',
-  './manifest.json',
-  'https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap',
-  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
+  './manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
