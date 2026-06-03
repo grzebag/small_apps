@@ -112,5 +112,10 @@
         </div>
     </div>
     <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator && ['http:', 'https:'].includes(window.location.protocol)) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
 </body>
 </html>
