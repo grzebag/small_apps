@@ -26,12 +26,21 @@ class MemoryGame {
             '🐇', '🦔', '🐸', '🐢', '🦢', '🪻', '🌵', '🥥', '🥭', '🍍',
             '🍕', '🍔', '🍣', '🍦', '🍩', '🥐', '🥨', '🥑', '🥦', '🌶️',
             '🚗', '🚀', '✈️', '🚲', '🚁', '⛵', '🚂', '🚜', '🛵', '🛸',
-            '💡', '💎', '🎨', '🎸', '⚽', '🎮', '📱', '⌚', '📷', '🔑'
+            '💡', '💎', '🎨', '🎸', '⚽', '🎮', '📱', '⌚', '📷', '🔑',
+            '👾', '🐷', '☢️', '🎈', '🧨', '🎁', '🎞️', '🎪', '🧵', '👓',
+            '🕶️', '🥾', '⛑️', '🪖', '⚾', '🥎', '🏀', '🏐', '🏈', '🏉',
+            '🎱', '💋', '🎳', '🥌', '🎣', '🤿', '🛷', '🎿', '🎯', '🎲',
+            '🕹️', '🔮', '🪄', '🎤', '🎙️', '🎻', '🎸', '🪗', '📻', '⚒️',
+            '⛏️', '🪓', '🔨', '🔧', '🪛', '🔩', '🪵', '🛖', '🛢️', '⚗️',
+            '🧪', '⚙️', '⚔️', '🔫', '🏹', '🪚', '🛡️', '☎️', '🗿', '🪫',
+            '🔌', '💽', '💾', '🖲️', '🎥', '🧮', '📽️', '📼', '💡', '💰',
+            '💵', '💼', '⌚', '⏰', '⏱️', '🕰️', '✂️', '🍭', '🚛', '🏍️',
+            '🚂', '🛩️', '🚀', '⚓', '🚢', '🏝️', '🕋', '🍟', '🍖', '🌴'
         ];
         
         this.board = document.getElementById('game-board');
         this.setupEventListeners();
-        this.updateRecordDisplay();
+        this.updateHeaderRecords();
     }
 
     migrateOldRecords() {
@@ -78,6 +87,7 @@ class MemoryGame {
         this.seconds = 0;
         this.levelScore = 0;
         document.getElementById('score').innerText = this.levelScore;
+        document.getElementById('combo-display').innerText = 'x0';
         
         const cardCount = this.getCardCount();
         const levelEmojis = this.getRandomEmojis(cardCount / 2);
@@ -91,7 +101,7 @@ class MemoryGame {
         });
 
         document.getElementById('session-score').innerText = this.sessionScore;
-        this.updateRecordDisplay();
+        this.updateHeaderRecords();
         this.startTimer();
     }
 
@@ -177,6 +187,7 @@ class MemoryGame {
             this.totalSpeedBonus += speedBonus * this.combo;
             this.levelScore += pointsEarned;
             document.getElementById('score').innerText = this.levelScore;
+            document.getElementById('combo-display').innerText = `x${this.combo}`;
 
             this.matchedPairs++;
             
@@ -193,7 +204,8 @@ class MemoryGame {
                 this.handleWin();
             }
         } else {
-            this.combo = 0; 
+            this.combo = 0;
+            document.getElementById('combo-display').innerText = 'x0';
             setTimeout(() => {
                 card1.classList.remove('flipped');
                 card2.classList.remove('flipped');
@@ -244,6 +256,7 @@ class MemoryGame {
         }
 
         localStorage.setItem('natureMemoryRecords', JSON.stringify(this.records));
+        this.updateHeaderRecords();
 
         // Star rating
         const cardCount = this.getCardCount();
@@ -296,19 +309,39 @@ class MemoryGame {
         };
     }
 
-    updateRecordDisplay() {
-        const el = document.getElementById('record-detail');
+    updateHeaderRecords() {
         const rec = this.records[this.level];
-        if (rec) {
+
+        // Best time
+        const bestTimeEl = document.getElementById('best-time');
+        if (rec && rec.time !== Infinity) {
+            const mins = Math.floor(rec.time / 60).toString().padStart(2, '0');
+            const secs = (rec.time % 60).toString().padStart(2, '0');
+            bestTimeEl.innerText = `${mins}:${secs}`;
+        } else {
+            bestTimeEl.innerText = '--:--';
+        }
+
+        // Best score
+        document.getElementById('best-score').innerText = rec ? rec.score : 0;
+
+        // Best combo
+        document.getElementById('best-combo').innerText = rec ? `x${rec.combo}` : 'x0';
+
+        // Best stars
+        const starsEl = document.getElementById('best-stars-display');
+        if (rec && rec.time !== Infinity) {
             const cardCount = this.getCardCount();
             const stars = rec.time <= cardCount * 1.5 ? '★★★' :
                           rec.time <= cardCount * 2.5 ? '★★☆' : '★☆☆';
-            const mins = Math.floor(rec.time / 60).toString().padStart(2, '0');
-            const secs = (rec.time % 60).toString().padStart(2, '0');
-            el.innerText = `${stars} ${mins}:${secs} | ${rec.score}pkt | x${rec.combo}`;
+            starsEl.innerText = stars;
         } else {
-            el.innerText = '--';
+            starsEl.innerText = '---';
         }
+
+        // Best session
+        const bestSessionEl = document.getElementById('best-session');
+        bestSessionEl.innerText = this.records.session ? this.records.session.score : 0;
     }
 
     startTimer() {

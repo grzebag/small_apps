@@ -12,13 +12,34 @@
 <body class="theme-zen">
     <div id="game-container">
         <header>
-            <div class="stat">Poziom: <span id="level">1</span></div>
-            <div class="stat">Czas: <span id="timer">00:00</span></div>
-            <div class="stat">Punkty: <span id="score">0</span></div>
-            <div class="stat">Łącznie: <span id="session-score">0</span></div>
-            <div class="stat record" id="record-display">
-                <span class="record-label">Rekord:</span>
-                <span class="record-value" id="record-detail">--</span>
+            <div class="stat">
+                <span class="stat-label">Poziom:</span>
+                <span class="stat-value" id="level">1</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Czas:</span>
+                <span class="stat-value" id="timer">00:00</span>
+                <span class="stat-record">Rekord: <span class="rec" id="best-time">--:--</span></span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Wynik:</span>
+                <span class="stat-value" id="score">0</span>
+                <span class="stat-record">Rekord: <span class="rec" id="best-score">0</span></span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Combo:</span>
+                <span class="stat-value" id="combo-display">x0</span>
+                <span class="stat-record">Rekord: <span class="rec" id="best-combo">x0</span></span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">☆☆☆</span>
+                <span class="stat-value" id="stars-display">☆☆☆</span>
+                <span class="stat-record">Rekord: <span class="rec" id="best-stars-display">---</span></span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Łącznie:</span>
+                <span class="stat-value" id="session-score">0</span>
+                <span class="stat-record">Rekord: <span class="rec" id="best-session">0</span></span>
             </div>
         </header>
         
