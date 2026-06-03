@@ -4,7 +4,10 @@ class MemoryGame {
         this.flippedCards = [];
         this.matchedPairs = 0;
         this.level = 1;
-        this.score = 0;
+        this.levelScore = 0;
+        this.sessionScore = 0;
+        this.records = JSON.parse(localStorage.getItem('natureMemoryRecords')) || {};
+        this.migrateOldRecords();
         this.timer = null;
         this.seconds = 0;
         this.isLocked = false;
@@ -15,7 +18,6 @@ class MemoryGame {
         this.totalSpeedBonus = 0;
         this.basePointsTotal = 0;
         this.lastMatchTime = 0;
-        this.bestTimes = JSON.parse(localStorage.getItem('natureMemoryBestTimes')) || {};
 
         // Expanded Emoji Pool (Nature, Food, Transport, Objects)
         this.emojis = [
@@ -32,6 +34,22 @@ class MemoryGame {
         this.updateBestTimeDisplay();
     }
 
+    migrateOldRecords() {
+        const oldData = localStorage.getItem('natureMemoryBestTimes');
+        if (oldData && !localStorage.getItem('natureMemoryRecords')) {
+            const oldTimes = JSON.parse(oldData);
+            Object.keys(oldTimes).forEach(level => {
+                this.records[level] = {
+                    time: oldTimes[level],
+                    score: 0,
+                    combo: 0
+                };
+            });
+            localStorage.setItem('natureMemoryRecords', JSON.stringify(this.records));
+            localStorage.removeItem('natureMemoryBestTimes');
+        }
+    }
+
     setupEventListeners() {
         document.querySelectorAll('.theme-options button').forEach(btn => {
             btn.addEventListener('click', (e) => this.startGame(e.target.dataset.theme));
@@ -41,6 +59,7 @@ class MemoryGame {
     startGame(theme) {
         document.body.className = `theme-${theme}`;
         document.getElementById('menu-overlay').classList.add('hidden');
+        this.sessionScore = 0;
         this.initLevel();
     }
 
@@ -57,8 +76,8 @@ class MemoryGame {
         this.basePointsTotal = 0;
         this.lastMatchTime = 0;
         this.seconds = 0;
-        this.score = 0; // Reset score for the level display? Actually let's keep total score but track level stats
-        document.getElementById('score').innerText = this.score;
+        this.levelScore = 0;
+        document.getElementById('score').innerText = this.levelScore;
         
         const cardCount = this.getCardCount();
         const levelEmojis = this.getRandomEmojis(cardCount / 2);
@@ -71,6 +90,7 @@ class MemoryGame {
             this.board.appendChild(card);
         });
 
+        document.getElementById('session-score').innerText = this.sessionScore;
         this.updateBestTimeDisplay();
         this.startTimer();
     }
@@ -155,8 +175,8 @@ class MemoryGame {
             
             this.basePointsTotal += basePoints;
             this.totalSpeedBonus += speedBonus * this.combo;
-            this.score += pointsEarned;
-            document.getElementById('score').innerText = this.score;
+            this.levelScore += pointsEarned;
+            document.getElementById('score').innerText = this.levelScore;
 
             this.matchedPairs++;
             
@@ -196,12 +216,34 @@ class MemoryGame {
 
     handleWin() {
         clearInterval(this.timer);
+
+        this.sessionScore += this.levelScore;
         
-        // Record keeping
-        if (!this.bestTimes[this.level] || this.seconds < this.bestTimes[this.level]) {
-            this.bestTimes[this.level] = this.seconds;
-            localStorage.setItem('natureMemoryBestTimes', JSON.stringify(this.bestTimes));
+        // Record keeping — time, score, combo per level + session total
+        const rec = this.records[this.level] || { time: Infinity, score: 0, combo: 0 };
+        let anyRecord = false;
+
+        if (!this.records[this.level] || this.seconds < rec.time) {
+            rec.time = this.seconds;
+            anyRecord = true;
         }
+        if (this.levelScore > rec.score) {
+            rec.score = this.levelScore;
+            anyRecord = true;
+        }
+        if (this.maxCombo > rec.combo) {
+            rec.combo = this.maxCombo;
+            anyRecord = true;
+        }
+
+        this.records[this.level] = rec;
+
+        if (this.sessionScore > (this.records.session?.score || 0)) {
+            this.records.session = { score: this.sessionScore };
+            anyRecord = true;
+        }
+
+        localStorage.setItem('natureMemoryRecords', JSON.stringify(this.records));
 
         // Star rating
         const cardCount = this.getCardCount();
@@ -219,7 +261,17 @@ class MemoryGame {
         document.getElementById('stat-base-pts').innerText = this.basePointsTotal;
         document.getElementById('stat-speed-bonus').innerText = `+${Math.round(this.totalSpeedBonus)}`;
         document.getElementById('stat-max-combo').innerText = `x${this.maxCombo}`;
-        document.getElementById('stat-total-score').innerText = this.score;
+        document.getElementById('stat-total-score').innerText = this.levelScore;
+        document.getElementById('stat-session-score').innerText = this.sessionScore;
+
+        // Show new record badge
+        const badge = document.getElementById('new-record-badge');
+        if (anyRecord) {
+            badge.classList.remove('hidden');
+            setTimeout(() => badge.classList.add('hidden'), 4000);
+        } else {
+            badge.classList.add('hidden');
+        }
 
         // Animate stars
         const starsEl = document.getElementById('level-stars');
