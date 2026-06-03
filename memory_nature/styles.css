@@ -14,11 +14,12 @@
 }
 
 body {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow-x: hidden;
+    overscroll-behavior: none;
     font-family: 'Poppins', sans-serif;
     transition: background 0.8s ease;
     background-attachment: fixed;
@@ -47,6 +48,12 @@ body::after {
     70% { transform:translate(0%, 15%) }
     80% { transform:translate(3%, 35%) }
     90% { transform:translate(-10%, 10%) }
+}
+
+@supports (-webkit-touch-callout: none) {
+    body::after {
+        display: none;
+    }
 }
 
 /* Theme: Nature Zen */
@@ -84,10 +91,11 @@ body.theme-eco {
 #game-container {
     width: 95vw;
     max-width: 1000px;
-    height: 95vh;
+    height: 95dvh;
+    padding: 2rem;
+    padding: 2rem env(safe-area-inset-right, 2rem) 2rem env(safe-area-inset-left, 2rem);
     display: flex;
     flex-direction: column;
-    padding: 2rem;
     position: relative;
     z-index: 2;
 }
@@ -292,8 +300,10 @@ header {
     touch-action: manipulation; /* Usuwa opóźnienie double-tap zoom */
 }
 
-.card:not(.flipped):hover {
-    transform: translateY(-8px);
+@media (hover: hover) {
+    .card:not(.flipped):hover {
+        transform: translateY(-8px);
+    }
 }
 
 .card-inner {
@@ -428,8 +438,10 @@ header {
     box-shadow: 15px 15px 0px #000;
     border-radius: 0;
 }
-.theme-eco .card:not(.flipped):hover .card-inner {
-    transform: translateY(-5px) rotate(2deg);
+@media (hover: hover) {
+    .theme-eco .card:not(.flipped):hover .card-inner {
+        transform: translateY(-5px) rotate(2deg);
+    }
 }
 .theme-eco header {
     background: #FF1493;
@@ -538,15 +550,17 @@ header {
     box-shadow: 8px 8px 0px #000;
 }
 
-.theme-options button:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    filter: brightness(1.1);
-}
+@media (hover: hover) {
+    .theme-options button:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        filter: brightness(1.1);
+    }
 
-.theme-options button[data-theme="eco"]:hover {
-    box-shadow: 4px 4px 0px #000;
-    transform: translate(4px, 4px);
+    .theme-options button[data-theme="eco"]:hover {
+        box-shadow: 4px 4px 0px #000;
+        transform: translate(4px, 4px);
+    }
 }
 
 /* Next Level Button Styling */
@@ -578,13 +592,15 @@ header {
     z-index: -1;
 }
 
-#next-level-btn:hover {
-    transform: scale(1.05) translateY(-5px);
-    box-shadow: 0 20px 45px rgba(0,0,0,0.3);
-}
+@media (hover: hover) {
+    #next-level-btn:hover {
+        transform: scale(1.05) translateY(-5px);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+    }
 
-#next-level-btn:hover::before {
-    left: 100%;
+    #next-level-btn:hover::before {
+        left: 100%;
+    }
 }
 
 .theme-eco #next-level-btn {
@@ -595,9 +611,11 @@ header {
     box-shadow: 10px 10px 0px #000;
 }
 
-.theme-eco #next-level-btn:hover {
-    box-shadow: 5px 5px 0px #000;
-    transform: translate(5px, 5px);
+@media (hover: hover) {
+    .theme-eco #next-level-btn:hover {
+        box-shadow: 5px 5px 0px #000;
+        transform: translate(5px, 5px);
+    }
 }
 
 /* Animations */
@@ -614,7 +632,8 @@ header {
 @media (max-width: 768px) {
     #game-container {
         padding: 1rem;
-        height: 100vh;
+        height: 100dvh;
+        padding: 1rem env(safe-area-inset-right, 1rem) 1rem env(safe-area-inset-left, 1rem);
     }
     header {
         padding: 1rem 1.5rem;
