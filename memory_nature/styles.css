@@ -239,6 +239,33 @@ header {
     text-shadow: 0 0 10px rgba(243, 156, 18, 0.2);
 }
 
+.summary-item.session-total {
+    margin-top: 0.3rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-size: 1.3rem;
+    opacity: 1;
+}
+.summary-item.session-total span:last-child {
+    color: #e74c3c;
+    font-size: 1.6rem;
+    text-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+}
+
+.new-record {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #f39c12;
+    text-shadow: 0 0 20px rgba(243, 156, 18, 0.5);
+    animation: record-pulse 1s ease-in-out infinite;
+    margin: 0.5rem 0;
+}
+
+@keyframes record-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
 .hidden {
     display: none !important;
 }
