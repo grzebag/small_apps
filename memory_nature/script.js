@@ -31,7 +31,7 @@ class MemoryGame {
         
         this.board = document.getElementById('game-board');
         this.setupEventListeners();
-        this.updateBestTimeDisplay();
+        this.updateRecordDisplay();
     }
 
     migrateOldRecords() {
@@ -91,7 +91,7 @@ class MemoryGame {
         });
 
         document.getElementById('session-score').innerText = this.sessionScore;
-        this.updateBestTimeDisplay();
+        this.updateRecordDisplay();
         this.startTimer();
     }
 
@@ -296,15 +296,18 @@ class MemoryGame {
         };
     }
 
-    updateBestTimeDisplay() {
-        const best = this.bestTimes[this.level];
-        const el = document.getElementById('best-time');
-        if (best) {
-            const mins = Math.floor(best / 60).toString().padStart(2, '0');
-            const secs = (best % 60).toString().padStart(2, '0');
-            el.innerText = `${mins}:${secs}`;
+    updateRecordDisplay() {
+        const el = document.getElementById('record-detail');
+        const rec = this.records[this.level];
+        if (rec) {
+            const cardCount = this.getCardCount();
+            const stars = rec.time <= cardCount * 1.5 ? '★★★' :
+                          rec.time <= cardCount * 2.5 ? '★★☆' : '★☆☆';
+            const mins = Math.floor(rec.time / 60).toString().padStart(2, '0');
+            const secs = (rec.time % 60).toString().padStart(2, '0');
+            el.innerText = `${stars} ${mins}:${secs} | ${rec.score}pkt | x${rec.combo}`;
         } else {
-            el.innerText = '--:--';
+            el.innerText = '--';
         }
     }
 

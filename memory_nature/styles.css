@@ -137,6 +137,18 @@ header {
     font-size: 1.2rem;
 }
 
+.stat.record {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    flex-direction: column;
+    align-items: center;
+}
+.stat.record .record-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 /* Combo Indicator */
 #combo-container {
     position: fixed;
@@ -594,6 +606,9 @@ header {
     }
     .card-back {
         font-size: 4rem;
+    }
+    .stat.record .record-value {
+        font-size: 0.65rem;
     }
     .menu-content {
         padding: 2.5rem 1.5rem;
