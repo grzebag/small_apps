@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nature-memory-v1';
+const CACHE_NAME = 'nature-memory-v2';
 const ASSETS = [
   './',
   './index.html',
