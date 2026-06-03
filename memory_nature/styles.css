@@ -143,9 +143,9 @@ header {
 }
 
 .stat-record {
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     font-weight: 500;
-    color: #00F5D4;
+    color: #999;
     opacity: 0.85;
     line-height: 1;
 }
@@ -375,6 +375,9 @@ header {
 .theme-zen .stat-value {
     font-style: italic;
 }
+.theme-zen .stat-record {
+    color: #8D7B6E;
+}
 .theme-zen .menu-content h1 {
     color: var(--text);
 }
@@ -418,6 +421,10 @@ header {
     z-index: 1;
 }
 
+.theme-forest .stat-record {
+    color: #999;
+}
+
 /* VIBRANT ECO: Toy-like Maximalism */
 .theme-eco .card-inner {
     transition: transform 0.5s var(--transition-bounce);
@@ -450,6 +457,9 @@ header {
 .theme-eco .stat-value {
     color: #000000;
     text-shadow: 2px 2px 0px #FFFFFF;
+}
+.theme-eco .stat-record {
+    color: #555;
 }
 
 /* Overlays & Menus */
@@ -643,7 +653,7 @@ header {
         font-size: 1.4rem;
     }
     .stat-record {
-        font-size: 0.55rem;
+        font-size: 0.66rem;
     }
     #game-board {
         gap: 0.8rem;
