@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1410">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Othello - Gra Mistrzów</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🏯 OTHELLO</h1>
+            <p class="subtitle">Gra Mistrzów</p>
+        </header>
+
+        <div class="score-panel">
+            <div class="score-card score-black">
+                <div class="disc-indicator black"></div>
+                <div class="score-info">
+                    <span class="score-label">Czarny (Ty)</span>
+                    <span class="score-value" id="score-black">2</span>
+                </div>
+            </div>
+            <div class="score-card score-white">
+                <div class="disc-indicator white"></div>
+                <div class="score-info">
+                    <span class="score-label">Biały (AI)</span>
+                    <span class="score-value" id="score-white">2</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="board-container">
+            <div class="board" id="board"></div>
+        </div>
+
+        <div class="controls">
+            <div class="difficulty-selector">
+                <span class="difficulty-label">Poziom:</span>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-level="easy">Łatwy</button>
+                    <button class="difficulty-btn active" data-level="medium">Średni</button>
+                    <button class="difficulty-btn" data-level="hard">Trudny</button>
+                </div>
+            </div>
+            <button class="new-game-btn" id="new-game-btn">Nowa Gra 🔄</button>
+        </div>
+
+        <div class="status" id="status">Twoja kolej (czarne)</div>
+
+        <a class="back-link" href="../index.html">← Powrót do huba</a>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

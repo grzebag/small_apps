@@ -1,0 +1,406 @@
+/* ============================================
+   Othello - Zen/Japanese Themed Stylesheet
+   ============================================ */
+
+:root {
+    --bg-primary: #1a1410;
+    --bg-secondary: #2a1810;
+    --board-color: #3d2817;
+    --board-line: #5a3d2a;
+    --accent-green: #4a7c59;
+    --accent-gold: #c9a96e;
+    --text-primary: #f5f0e8;
+    --text-secondary: #a89888;
+    --black-disc: #1a1a1a;
+    --white-disc: #f0ece6;
+    --shadow-dark: rgba(0, 0, 0, 0.5);
+    --shadow-light: rgba(255, 255, 255, 0.1);
+}
+
+/* 1. Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. Body */
+body {
+    background-color: var(--bg-primary);
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(74, 124, 89, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(201, 169, 110, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(42, 24, 16, 0.5) 0%, transparent 60%);
+    color: var(--text-primary);
+    font-family: 'Noto Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 3. Container */
+.container {
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 4. Header */
+.header {
+    text-align: center;
+}
+
+.title {
+    font-family: 'Noto Serif', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.15em;
+}
+
+.subtitle {
+    font-family: 'Noto Serif', serif;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 4px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+/* 5. Score Panel */
+.score-panel {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.score-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-secondary);
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    min-width: 150px;
+}
+
+.disc-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.disc-indicator.black {
+    background: radial-gradient(circle at 35% 35%, #444, var(--black-disc));
+    box-shadow: 0 2px 4px var(--shadow-dark), inset 0 1px 1px var(--shadow-light);
+}
+
+.disc-indicator.white {
+    background: radial-gradient(circle at 35% 35%, #fff, var(--white-disc));
+    box-shadow: 0 2px 4px var(--shadow-dark), inset 0 1px 1px rgba(0,0,0,0.05);
+}
+
+.score-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.score-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+.score-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    line-height: 1;
+}
+
+/* 6. Board */
+.board-container {
+    display: flex;
+    justify-content: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+    background: var(--board-line);
+    border: 3px solid var(--board-line);
+    border-radius: 8px;
+    box-shadow:
+        0 8px 32px var(--shadow-dark),
+        inset 0 0 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    width: 100%;
+    max-width: 440px;
+    aspect-ratio: 1;
+}
+
+/* 7. Cells */
+.cell {
+    aspect-ratio: 1;
+    background: var(--board-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.cell:hover {
+    background: #4a3520;
+}
+
+.cell.valid-move::after {
+    content: '';
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    background: var(--accent-green);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.cell.valid-move:hover::after {
+    opacity: 0.9;
+}
+
+/* 8. Discs */
+.disc {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    position: relative;
+    transition: transform 0.1s ease;
+}
+
+.disc.black {
+    background: radial-gradient(circle at 35% 35%, #555 0%, var(--black-disc) 70%);
+    box-shadow:
+        0 3px 6px var(--shadow-dark),
+        inset 0 2px 4px var(--shadow-light),
+        inset 0 -1px 2px rgba(0,0,0,0.4);
+}
+
+.disc.white {
+    background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--white-disc) 70%);
+    box-shadow:
+        0 3px 6px var(--shadow-dark),
+        inset 0 2px 4px rgba(255,255,255,0.6),
+        inset 0 -1px 2px rgba(0,0,0,0.08);
+}
+
+.disc.flipping {
+    animation: flip 0.35s ease-in-out;
+}
+
+/* 9. Controls */
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+.difficulty-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.difficulty-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.difficulty-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.difficulty-btn {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid rgba(201, 169, 110, 0.2);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.difficulty-btn:hover {
+    border-color: var(--accent-gold);
+    color: var(--text-primary);
+}
+
+.difficulty-btn.active {
+    background: rgba(201, 169, 110, 0.15);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+    font-weight: 600;
+}
+
+.new-game-btn {
+    background: linear-gradient(135deg, var(--accent-green), #3a6549);
+    color: var(--text-primary);
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(74, 124, 89, 0.3);
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.new-game-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(74, 124, 89, 0.4);
+}
+
+.new-game-btn:active {
+    transform: translateY(0);
+}
+
+/* 10. Status */
+.status {
+    text-align: center;
+    color: var(--accent-gold);
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    border: 1px solid rgba(201, 169, 110, 0.2);
+    border-radius: 8px;
+    background: rgba(201, 169, 110, 0.05);
+    letter-spacing: 0.03em;
+}
+
+/* 11. Back Link */
+.back-link {
+    text-align: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    padding: 8px;
+}
+
+.back-link:hover {
+    opacity: 1;
+    color: var(--accent-gold);
+}
+
+/* 12. Responsive */
+
+/* iPad optimization */
+@media (min-width: 768px) {
+    body {
+        padding: 40px;
+    }
+
+    .title {
+        font-size: 3rem;
+    }
+
+    .board {
+        max-width: 480px;
+    }
+
+    .score-card {
+        padding: 14px 24px;
+        min-width: 180px;
+    }
+
+    .score-value {
+        font-size: 1.8rem;
+    }
+}
+
+/* Mobile optimization */
+@media (max-width: 500px) {
+    body {
+        padding: 12px;
+        align-items: flex-start;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 0.8rem;
+    }
+
+    .score-panel {
+        gap: 10px;
+    }
+
+    .score-card {
+        padding: 8px 12px;
+        min-width: 130px;
+        gap: 8px;
+    }
+
+    .score-value {
+        font-size: 1.3rem;
+    }
+
+    .board {
+        max-width: 100%;
+    }
+
+    .difficulty-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+
+    .new-game-btn {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+
+    .container {
+        gap: 16px;
+    }
+}
+
+/* 13. Animations */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.4;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+@keyframes flip {
+    0% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(90deg);
+    }
+    100% {
+        transform: rotateY(0deg);
+    }
+}
