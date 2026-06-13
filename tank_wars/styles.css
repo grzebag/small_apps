@@ -772,3 +772,39 @@ input[type="range"]::-webkit-slider-thumb {
     .slider-group label { font-size: 0.8rem; }
     .defeat-text, .victory-text { font-size: 2.5rem; }
 }
+
+/* Touch device adjustments */
+.touch-device .controls {
+    padding: 12px 16px;
+    gap: 8px;
+}
+
+.touch-device .slider-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.touch-device input[type="range"] {
+    pointer-events: none;
+    opacity: 0.5;
+    height: 20px;
+}
+
+.touch-device #fire-btn {
+    display: none;
+}
+
+.touch-device .canvas-container {
+    touch-action: none;
+}
+
+.touch-device .controls::after {
+    content: 'SWIPE: ↕ kąt  ↔ moc  |  puść = strzał';
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 0.7rem;
+    color: #666;
+    margin-top: 4px;
+    letter-spacing: 1px;
+}

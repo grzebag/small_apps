@@ -343,6 +343,47 @@ powerSlider.addEventListener('input', () => {
     powerValue.textContent = powerSlider.value;
 });
 
+// Touch controls - swipe anywhere on canvas to aim
+const canvasContainer = document.querySelector('.canvas-container');
+let touchStartX = 0, touchStartY = 0;
+let touchStartAngle = 0, touchStartPower = 0;
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+if (isTouchDevice) {
+    document.body.classList.add('touch-device');
+    
+    canvasContainer.addEventListener('touchstart', (e) => {
+        if (game.phase !== 'player') return;
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartAngle = game.player.angle;
+        touchStartPower = parseInt(powerSlider.value);
+    }, { passive: true });
+
+    canvasContainer.addEventListener('touchmove', (e) => {
+        if (game.phase !== 'player') return;
+        e.preventDefault();
+        const t = e.touches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        
+        const newAngle = Math.max(0, Math.min(180, touchStartAngle - dy * 0.5));
+        const newPower = Math.max(0, Math.min(100, touchStartPower + dx * 0.5));
+        
+        game.player.angle = Math.round(newAngle);
+        powerSlider.value = Math.round(newPower);
+        angleSlider.value = game.player.angle;
+        angleValue.textContent = game.player.angle;
+        powerValue.textContent = powerSlider.value;
+    }, { passive: false });
+
+    canvasContainer.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        fire();
+    }, { passive: false });
+}
+
 fireBtn.addEventListener('click', fire);
 fireBtn.addEventListener('touchend', (e) => { e.preventDefault(); fire(); });
 
