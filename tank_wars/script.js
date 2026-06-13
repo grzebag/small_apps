@@ -347,6 +347,7 @@ powerSlider.addEventListener('input', () => {
 const canvasContainer = document.querySelector('.canvas-container');
 let touchStartX = 0, touchStartY = 0;
 let touchStartAngle = 0, touchStartPower = 0;
+let touchMoved = false;
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 if (isTouchDevice) {
@@ -359,6 +360,7 @@ if (isTouchDevice) {
         touchStartY = t.clientY;
         touchStartAngle = game.player.angle;
         touchStartPower = parseInt(powerSlider.value);
+        touchMoved = false;
     }, { passive: true });
 
     canvasContainer.addEventListener('touchmove', (e) => {
@@ -367,6 +369,8 @@ if (isTouchDevice) {
         const t = e.touches[0];
         const dx = t.clientX - touchStartX;
         const dy = t.clientY - touchStartY;
+        
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) touchMoved = true;
         
         const newAngle = Math.max(0, Math.min(180, touchStartAngle - dy * 0.5));
         const newPower = Math.max(0, Math.min(100, touchStartPower + dx * 0.5));
@@ -380,7 +384,7 @@ if (isTouchDevice) {
 
     canvasContainer.addEventListener('touchend', (e) => {
         e.preventDefault();
-        fire();
+        if (!touchMoved && game.phase === 'player') fire();
     }, { passive: false });
 }
 
@@ -872,6 +876,14 @@ resizeCanvas();
 document.getElementById('mute-btn').addEventListener('click', () => {
     AudioSystem.toggle();
     document.getElementById('mute-btn').textContent = AudioSystem.muted ? '🔇' : '🔊';
+});
+
+document.getElementById('info-btn').addEventListener('click', () => {
+    document.getElementById('info-modal').classList.toggle('hidden');
+});
+
+document.getElementById('info-close').addEventListener('click', () => {
+    document.getElementById('info-modal').classList.add('hidden');
 });
 
 setTimeout(() => {

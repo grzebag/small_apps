@@ -14,6 +14,7 @@
     <div class="game-wrapper">
         <header class="game-header">
             <h1>TANK WARS</h1>
+            <button class="info-btn" id="info-btn">?</button>
             <div class="stats">
                 <div class="stat-box player">
                     <span class="label">GRACZ</span>
@@ -114,6 +115,26 @@
             </div>
         </div>
     </div>
+
+    <div class="info-modal hidden" id="info-modal">
+        <div class="info-content">
+            <button class="info-close" id="info-close">✕</button>
+            <h2>TANK WARS</h2>
+            <p class="info-desc">Taktyczna wojna czołgów ze zmiennym wiatrem i deformacją terenu.</p>
+            <div class="info-section">
+                <h3>Sterowanie</h3>
+                <div class="info-row"><span class="info-key">↑ ↓</span> kąt lufy</div>
+                <div class="info-row"><span class="info-key">← →</span> moc strzału</div>
+                <div class="info-row"><span class="info-key">SPACE</span> strzał</div>
+                <div class="info-row info-touch">📱 <b>Swipe</b> ↕ kąt, ↔ moc &nbsp;|&nbsp; <b>Tap</b> = strzał</div>
+            </div>
+            <div class="info-section">
+                <h3>Jak grać</h3>
+                <p>Walcz z AI na deformującym się terenie. Celuj, dostosuj siłę i strzelaj. Trafienia i upadki zadają obrażenia. Wiatr zmienia się po każdym strzale. Zniszcz czołg przeciwnika!</p>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
 </body>
