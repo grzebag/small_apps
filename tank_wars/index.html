@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Tank Wars - Wojna Czołgów</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="game-wrapper">
+        <header class="game-header">
+            <h1>TANK WARS</h1>
+            <div class="stats">
+                <div class="stat-box player">
+                    <span class="label">GRACZ</span>
+                    <div class="hp-bar"><div class="hp-fill" id="player-hp"></div></div>
+                    <span class="hp-text" id="player-hp-text">100</span>
+                </div>
+                <div class="wind-box">
+                    <span class="label">WIATR</span>
+                    <div class="wind-arrow" id="wind-arrow">→</div>
+                    <span class="wind-text" id="wind-text">0.0</span>
+                </div>
+                <div class="stat-box enemy">
+                    <span class="label">AI</span>
+                    <div class="hp-bar"><div class="hp-fill" id="enemy-hp"></div></div>
+                    <span class="hp-text" id="enemy-hp-text">100</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            <div id="message" class="message hidden"></div>
+        </div>
+
+        <div class="controls">
+            <div class="slider-group">
+                <label>KĄT: <span id="angle-value">45</span>°</label>
+                <input type="range" id="angle-slider" min="0" max="180" value="45">
+            </div>
+            <div class="slider-group">
+                <label>SIŁA: <span id="power-value">50</span>%</label>
+                <input type="range" id="power-slider" min="0" max="100" value="50">
+            </div>
+            <button id="fire-btn">STRZAŁ</button>
+        </div>
+
+        <div class="difficulty-select" id="difficulty-select">
+            <h2>WYBIERZ POZIOM TRUDNOŚCI</h2>
+            <button class="diff-btn" data-level="easy">ŁATWY</button>
+            <button class="diff-btn" data-level="medium">ŚREDNI</button>
+            <button class="diff-btn" data-level="hard">TRUDNY</button>
+        </div>
+
+        <div class="game-over hidden" id="game-over">
+            <h2 id="game-over-text">KONIEC GRY</h2>
+            <button id="restart-btn">ZAGRAJ PONOWNIE</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

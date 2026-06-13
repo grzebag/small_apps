@@ -390,6 +390,65 @@ function endTurn() {
     }
 }
 
+function aiTurn() {
+    if (!game.enemy || game.enemy.hp <= 0) return;
+    
+    const target = game.player;
+    const dist = target.x - game.enemy.x;
+    const heightDiff = target.y - game.enemy.y;
+    const absDist = Math.abs(dist);
+    
+    let optimalAngle, optimalPower;
+    
+    if (absDist < 100) {
+        optimalAngle = dist > 0 ? 60 : 120;
+        optimalPower = 40;
+    } else if (absDist < 250) {
+        optimalAngle = dist > 0 ? 50 : 130;
+        optimalPower = 60;
+    } else {
+        optimalAngle = dist > 0 ? 40 : 140;
+        optimalPower = 80;
+    }
+    
+    if (heightDiff > 30) optimalPower += 15;
+    else if (heightDiff < -30) optimalPower -= 10;
+    
+    optimalPower -= game.wind * 50 * Math.sign(dist);
+    
+    let angleError, powerError;
+    switch(game.difficulty) {
+        case 'easy':
+            angleError = (Math.random() - 0.5) * 30;
+            powerError = (Math.random() - 0.5) * 40;
+            break;
+        case 'medium':
+            angleError = (Math.random() - 0.5) * 16;
+            powerError = (Math.random() - 0.5) * 20;
+            break;
+        case 'hard':
+            angleError = (Math.random() - 0.5) * 6;
+            powerError = (Math.random() - 0.5) * 10;
+            break;
+    }
+    
+    game.enemy.angle = Math.max(0, Math.min(180, optimalAngle + angleError));
+    const power = Math.max(10, Math.min(100, optimalPower + powerError));
+    
+    const angle = game.enemy.angle * Math.PI / 180;
+    const speed = (power / 100) * 12;
+    
+    game.projectile = {
+        x: game.enemy.x,
+        y: game.enemy.y - game.enemy.height - 2,
+        vx: Math.cos(angle) * speed * (game.enemy.angle <= 90 ? 1 : -1),
+        vy: -Math.sin(angle) * speed,
+        owner: 'enemy'
+    };
+    
+    showMessage('AI STRZELA...', 500);
+}
+
 function checkGameOver() {
     if (game.player.hp <= 0) {
         showMessage('PRZEGRAŁEŚ!', 999999);
