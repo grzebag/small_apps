@@ -199,7 +199,7 @@ input[type="range"]::-webkit-slider-thumb {
     min-width: 44px;
 }
 
-.difficulty-select, .game-over {
+.difficulty-select {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.92);
@@ -211,9 +211,9 @@ input[type="range"]::-webkit-slider-thumb {
     z-index: 20;
 }
 
-.difficulty-select.hidden, .game-over.hidden { display: none; }
+.difficulty-select.hidden { display: none; }
 
-.difficulty-select h2, .game-over h2 {
+.difficulty-select h2 {
     color: var(--accent);
     font-size: 1.3rem;
     letter-spacing: 2px;
@@ -234,19 +234,541 @@ input[type="range"]::-webkit-slider-thumb {
 
 .diff-btn:active { background: var(--accent); }
 
-#restart-btn {
+/* ==================== GAME OVER OVERLAY ==================== */
+.game-over {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    display: flex;
+}
+
+.game-over.hidden { display: none; }
+
+/* ==================== DEFEAT SCREEN ==================== */
+.game-over-defeat {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: radial-gradient(ellipse at center bottom, rgba(180,30,20,0.3) 0%, rgba(0,0,0,0.95) 70%);
+    animation: defeatPulse 3s ease-in-out infinite;
+    overflow: hidden;
+}
+
+.game-over.defeat .game-over-defeat { display: flex; }
+
+@keyframes defeatPulse {
+    0%, 100% { background: radial-gradient(ellipse at center bottom, rgba(180,30,20,0.3) 0%, rgba(0,0,0,0.95) 70%); }
+    50% { background: radial-gradient(ellipse at center bottom, rgba(200,40,20,0.45) 0%, rgba(0,0,0,0.95) 70%); }
+}
+
+/* Wreck tank */
+.wreck-tank {
+    position: relative;
+    width: 80px;
+    height: 50px;
+    transform: rotate(-12deg) translateY(10px);
+    margin-bottom: 10px;
+    animation: wreckShake 0.15s infinite alternate;
+}
+
+@keyframes wreckShake {
+    from { transform: rotate(-12deg) translateY(10px) translateX(-1px); }
+    to { transform: rotate(-12deg) translateY(10px) translateX(1px); }
+}
+
+.wreck-body {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    width: 55px;
+    height: 20px;
+    background: #2a2a2a;
+    border-radius: 3px;
+    border: 2px solid #444;
+}
+
+.wreck-body::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 15px;
+    width: 25px;
+    height: 10px;
+    background: #333;
+    border-radius: 4px 4px 0 0;
+    border: 2px solid #555;
+    border-bottom: none;
+}
+
+.wreck-barrel {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    width: 40px;
+    height: 6px;
+    background: #555;
+    transform: rotate(25deg);
+    transform-origin: left center;
+    border-radius: 2px;
+}
+
+.wreck-barrel::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 8px;
+    height: 10px;
+    background: #444;
+    border-radius: 2px;
+}
+
+.wreck-track {
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+    width: 60px;
+    height: 10px;
+    background: #1a1a1a;
+    border-radius: 3px;
+}
+
+.wreck-fire {
+    position: absolute;
+    border-radius: 50%;
+    animation: fireFlicker 0.3s ease-in-out infinite alternate;
+}
+
+.wreck-fire.f1 {
+    width: 14px; height: 18px;
+    background: radial-gradient(ellipse, #ff6600 20%, #ff3300 50%, transparent 70%);
+    bottom: 22px; left: 20px;
+    animation-delay: 0s;
+}
+
+.wreck-fire.f2 {
+    width: 10px; height: 14px;
+    background: radial-gradient(ellipse, #ffaa00 20%, #ff6600 50%, transparent 70%);
+    bottom: 26px; left: 28px;
+    animation-delay: 0.1s;
+}
+
+.wreck-fire.f3 {
+    width: 8px; height: 10px;
+    background: radial-gradient(ellipse, #ffcc00 20%, #ff8800 50%, transparent 70%);
+    bottom: 30px; left: 24px;
+    animation-delay: 0.2s;
+}
+
+@keyframes fireFlicker {
+    from { opacity: 0.7; transform: scaleY(0.85) scaleX(1.1); }
+    to { opacity: 1; transform: scaleY(1.15) scaleX(0.9); }
+}
+
+/* Smoke */
+.smoke-container {
+    position: absolute;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 200px;
+    pointer-events: none;
+}
+
+.smoke {
+    position: absolute;
+    bottom: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(100,100,100,0.4) 0%, transparent 70%);
+    animation: smokeRise 3s ease-out infinite;
+}
+
+.smoke.s1 { width: 30px; height: 30px; left: 40px; animation-delay: 0s; }
+.smoke.s2 { width: 22px; height: 22px; left: 55px; animation-delay: 0.4s; }
+.smoke.s3 { width: 28px; height: 28px; left: 35px; animation-delay: 0.8s; }
+.smoke.s4 { width: 18px; height: 18px; left: 60px; animation-delay: 1.2s; }
+.smoke.s5 { width: 25px; height: 25px; left: 45px; animation-delay: 1.6s; }
+.smoke.s6 { width: 20px; height: 20px; left: 50px; animation-delay: 2.0s; }
+.smoke.s7 { width: 32px; height: 32px; left: 38px; animation-delay: 2.4s; }
+.smoke.s8 { width: 16px; height: 16px; left: 58px; animation-delay: 0.6s; }
+
+@keyframes smokeRise {
+    0% { opacity: 0.6; transform: translateY(0) scale(0.5); }
+    50% { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(-180px) scale(2.5) translateX(20px); }
+}
+
+/* Sparks */
+.spark-container {
+    position: absolute;
+    bottom: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 150px;
+    pointer-events: none;
+}
+
+.spark {
+    position: absolute;
+    bottom: 0;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #ff8800;
+    box-shadow: 0 0 4px #ff6600, 0 0 8px #ff4400;
+    animation: sparkFloat 1.5s ease-out infinite;
+}
+
+.spark.sp1 { left: 30px; --sx: -15px; animation-delay: 0s; }
+.spark.sp2 { left: 50px; --sx: 12px; animation-delay: 0.15s; }
+.spark.sp3 { left: 70px; --sx: -8px; animation-delay: 0.3s; }
+.spark.sp4 { left: 40px; --sx: 18px; animation-delay: 0.45s; }
+.spark.sp5 { left: 60px; --sx: -12px; animation-delay: 0.6s; }
+.spark.sp6 { left: 45px; --sx: 6px; animation-delay: 0.75s; }
+.spark.sp7 { left: 55px; --sx: -20px; animation-delay: 0.9s; }
+.spark.sp8 { left: 35px; --sx: 14px; animation-delay: 1.05s; }
+.spark.sp9 { left: 65px; --sx: -6px; animation-delay: 0.2s; }
+.spark.sp10 { left: 48px; --sx: 10px; animation-delay: 0.5s; }
+.spark.sp11 { left: 52px; --sx: -16px; animation-delay: 0.7s; }
+.spark.sp12 { left: 42px; --sx: 8px; animation-delay: 1.0s; }
+
+@keyframes sparkFloat {
+    0% { opacity: 1; transform: translateY(0) translateX(0); }
+    100% { opacity: 0; transform: translateY(-120px) translateX(var(--sx, 10px)); }
+}
+
+/* Defeat text */
+.defeat-text {
+    font-size: 2rem;
+    color: #ff3333;
+    text-shadow: 0 0 20px rgba(255,50,50,0.8), 0 0 40px rgba(255,0,0,0.4), 0 0 60px rgba(200,0,0,0.2);
+    letter-spacing: 6px;
+    animation: glitchText 0.1s infinite alternate, defeatTextIn 0.8s ease-out;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+@keyframes defeatTextIn {
+    0% { opacity: 0; transform: scale(2.5) rotate(-5deg); filter: blur(10px); }
+    60% { opacity: 1; transform: scale(0.95) rotate(1deg); filter: blur(0); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes glitchText {
+    0% { text-shadow: 0 0 20px rgba(255,50,50,0.8), 2px 0 #00ffff, -2px 0 #ff00ff; }
+    25% { text-shadow: 0 0 20px rgba(255,50,50,0.8), -1px 0 #00ffff, 1px 0 #ff00ff; }
+    50% { text-shadow: 0 0 20px rgba(255,50,50,0.8), 1px 1px #00ffff, -1px -1px #ff00ff; }
+    75% { text-shadow: 0 0 20px rgba(255,50,50,0.8), -2px 1px #00ffff, 2px -1px #ff00ff; }
+    100% { text-shadow: 0 0 20px rgba(255,50,50,0.8), 0px -1px #00ffff, 0px 1px #ff00ff; }
+}
+
+.defeat-sub {
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    z-index: 2;
+    animation: fadeIn 1s ease-out 0.5s both;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.restart-btn {
     padding: 14px 32px;
-    background: var(--accent);
     color: white;
     border: none;
     border-radius: 6px;
     font-size: 1rem;
     font-family: inherit;
+    font-weight: bold;
     cursor: pointer;
+    letter-spacing: 1px;
+    z-index: 2;
+}
+
+.defeat-btn {
+    background: #8b0000;
+    border: 2px solid #ff3333;
+    animation: fadeIn 1s ease-out 0.8s both;
+}
+
+.defeat-btn:active { background: #cc0000; }
+
+/* ==================== VICTORY SCREEN ==================== */
+.game-over-victory {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: radial-gradient(ellipse at center top, rgba(255,200,50,0.25) 0%, rgba(0,0,0,0.95) 70%);
+    animation: victoryPulse 2.5s ease-in-out infinite;
+    overflow: hidden;
+}
+
+.game-over.victory .game-over-victory { display: flex; }
+
+@keyframes victoryPulse {
+    0%, 100% { background: radial-gradient(ellipse at center top, rgba(255,200,50,0.25) 0%, rgba(0,0,0,0.95) 70%); }
+    50% { background: radial-gradient(ellipse at center top, rgba(255,220,80,0.35) 0%, rgba(0,0,0,0.95) 70%); }
+}
+
+/* Victory tank */
+.victory-tank {
+    position: relative;
+    width: 80px;
+    height: 50px;
+    margin-bottom: 8px;
+    animation: tankBounce 1s ease-in-out infinite alternate;
+}
+
+@keyframes tankBounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+}
+
+.v-tank-body {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    width: 55px;
+    height: 20px;
+    background: #2a5a2a;
+    border-radius: 3px;
+    border: 2px solid #4a8a4a;
+    box-shadow: 0 0 15px rgba(80,180,80,0.3);
+}
+
+.v-tank-body::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 15px;
+    width: 25px;
+    height: 10px;
+    background: #3a6a3a;
+    border-radius: 4px 4px 0 0;
+    border: 2px solid #5a9a5a;
+    border-bottom: none;
+}
+
+.v-tank-barrel {
+    position: absolute;
+    bottom: 22px;
+    left: 30px;
+    width: 35px;
+    height: 6px;
+    background: #5a8a5a;
+    transform: rotate(-35deg);
+    transform-origin: left center;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(100,200,100,0.4);
+}
+
+.v-tank-barrel::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 8px;
+    height: 10px;
+    background: #4a7a4a;
+    border-radius: 2px;
+}
+
+.v-tank-track {
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+    width: 60px;
+    height: 10px;
+    background: #1a3a1a;
+    border-radius: 3px;
+}
+
+/* Crown */
+.crown {
+    font-size: 2.2rem;
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255,215,0,0.6), 0 0 30px rgba(255,200,0,0.3);
+    animation: crownBounce 0.8s ease-in-out infinite alternate;
+    z-index: 2;
+    margin-bottom: 4px;
+}
+
+@keyframes crownBounce {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(-6px) scale(1.05); }
+}
+
+/* Medal */
+.medal {
+    position: relative;
+    width: 36px;
+    height: 50px;
+    margin-bottom: 8px;
+    z-index: 2;
+    animation: medalSwing 2s ease-in-out infinite alternate;
+}
+
+@keyframes medalSwing {
+    from { transform: rotate(-3deg); }
+    to { transform: rotate(3deg); }
+}
+
+.medal-ribbon {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 22px;
+    background: linear-gradient(180deg, #cc3333, #aa2222);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);
+}
+
+.medal-disc {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd700, #ffaa00, #ffd700);
+    border: 3px solid #cc8800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #8b6914;
+    box-shadow: 0 0 10px rgba(255,215,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.2);
+}
+
+/* Victory text */
+.victory-text {
+    font-size: 2rem;
+    color: #ffd700;
+    text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,200,0,0.4), 0 0 60px rgba(255,180,0,0.2);
+    letter-spacing: 6px;
+    animation: victoryTextIn 0.8s ease-out, goldGlow 2s ease-in-out infinite alternate;
+    z-index: 2;
+    margin-top: 6px;
+}
+
+@keyframes victoryTextIn {
+    0% { opacity: 0; transform: scale(0.3) rotate(10deg); filter: blur(8px); }
+    60% { opacity: 1; transform: scale(1.1) rotate(-2deg); filter: blur(0); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes goldGlow {
+    from { text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,200,0,0.4); }
+    to { text-shadow: 0 0 30px rgba(255,215,0,1), 0 0 60px rgba(255,200,0,0.6), 0 0 80px rgba(255,180,0,0.3); }
+}
+
+.victory-sub {
+    color: #aaa;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    z-index: 2;
+    animation: fadeIn 1s ease-out 0.5s both;
+}
+
+.victory-btn {
+    background: linear-gradient(135deg, #b8860b, #daa520);
+    border: 2px solid #ffd700;
+    color: #1a1a2e;
+    font-weight: bold;
+    animation: fadeIn 1s ease-out 0.8s both;
+}
+
+.victory-btn:active { background: linear-gradient(135deg, #daa520, #ffd700); }
+
+/* Stars */
+.star-container {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.star {
+    position: absolute;
+    color: #ffd700;
+    font-size: 1rem;
+    animation: starTwinkle 1.5s ease-in-out infinite alternate;
+    text-shadow: 0 0 6px rgba(255,215,0,0.6);
+}
+
+.star.st1 { top: 8%; left: 10%; animation-delay: 0s; font-size: 0.8rem; }
+.star.st2 { top: 15%; right: 12%; animation-delay: 0.3s; font-size: 1.2rem; }
+.star.st3 { top: 25%; left: 18%; animation-delay: 0.6s; font-size: 0.7rem; }
+.star.st4 { top: 10%; left: 50%; animation-delay: 0.15s; font-size: 1rem; }
+.star.st5 { top: 20%; right: 25%; animation-delay: 0.45s; font-size: 0.9rem; }
+.star.st6 { top: 5%; left: 35%; animation-delay: 0.75s; font-size: 1.1rem; }
+.star.st7 { top: 18%; left: 70%; animation-delay: 0.25s; font-size: 0.8rem; }
+.star.st8 { top: 12%; right: 35%; animation-delay: 0.55s; font-size: 0.7rem; }
+
+@keyframes starTwinkle {
+    from { opacity: 0.3; transform: scale(0.7) rotate(0deg); }
+    to { opacity: 1; transform: scale(1.2) rotate(20deg); }
+}
+
+/* Confetti */
+.confetti-container {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.confetti {
+    position: absolute;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    animation: confettiFall linear infinite;
+}
+
+.confetti.c1 { left: 5%; background: #ff4444; animation-duration: 3s; animation-delay: 0s; border-radius: 2px; transform: rotate(45deg); }
+.confetti.c2 { left: 12%; background: #ffd700; animation-duration: 2.5s; animation-delay: 0.2s; border-radius: 50%; width: 6px; height: 6px; }
+.confetti.c3 { left: 20%; background: #44ff44; animation-duration: 3.5s; animation-delay: 0.5s; border-radius: 1px; }
+.confetti.c4 { left: 28%; background: #4444ff; animation-duration: 2.8s; animation-delay: 0.1s; border-radius: 2px; transform: rotate(30deg); }
+.confetti.c5 { left: 35%; background: #ff44ff; animation-duration: 3.2s; animation-delay: 0.7s; border-radius: 50%; width: 5px; height: 5px; }
+.confetti.c6 { left: 42%; background: #ffd700; animation-duration: 2.6s; animation-delay: 0.3s; border-radius: 2px; }
+.confetti.c7 { left: 50%; background: #ff6644; animation-duration: 3.1s; animation-delay: 0.9s; border-radius: 50%; width: 7px; height: 7px; }
+.confetti.c8 { left: 58%; background: #44ddff; animation-duration: 2.9s; animation-delay: 0.15s; border-radius: 1px; transform: rotate(60deg); }
+.confetti.c9 { left: 65%; background: #ff4488; animation-duration: 3.3s; animation-delay: 0.6s; border-radius: 2px; }
+.confetti.c10 { left: 72%; background: #88ff44; animation-duration: 2.7s; animation-delay: 0.4s; border-radius: 50%; width: 6px; height: 6px; }
+.confetti.c11 { left: 80%; background: #ffd700; animation-duration: 3.4s; animation-delay: 0.8s; border-radius: 2px; transform: rotate(20deg); }
+.confetti.c12 { left: 88%; background: #ff8844; animation-duration: 2.4s; animation-delay: 0.25s; border-radius: 1px; }
+.confetti.c13 { left: 95%; background: #44ffaa; animation-duration: 3.0s; animation-delay: 0.55s; border-radius: 50%; width: 5px; height: 5px; }
+.confetti.c14 { left: 8%; background: #ff4444; animation-duration: 2.8s; animation-delay: 1.0s; border-radius: 2px; }
+.confetti.c15 { left: 45%; background: #ffd700; animation-duration: 3.6s; animation-delay: 0.35s; border-radius: 1px; transform: rotate(45deg); }
+.confetti.c16 { left: 75%; background: #aa44ff; animation-duration: 2.5s; animation-delay: 0.65s; border-radius: 50%; width: 6px; height: 6px; }
+.confetti.c17 { left: 30%; background: #44ff88; animation-duration: 3.2s; animation-delay: 0.45s; border-radius: 2px; }
+.confetti.c18 { left: 60%; background: #ff6688; animation-duration: 2.9s; animation-delay: 0.75s; border-radius: 1px; transform: rotate(15deg); }
+
+@keyframes confettiFall {
+    0% { top: -10px; opacity: 1; transform: rotateX(0) rotateZ(0); }
+    100% { top: 110%; opacity: 0.3; transform: rotateX(720deg) rotateZ(360deg); }
 }
 
 @media (min-width: 600px) {
     h1 { font-size: 1.8rem; }
     .controls { padding: 14px 20px; }
     .slider-group label { font-size: 0.8rem; }
+    .defeat-text, .victory-text { font-size: 2.5rem; }
 }

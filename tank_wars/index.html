@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Tank Wars - Wojna Czołgów</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
 </head>
@@ -33,7 +34,7 @@
         </header>
 
         <div class="canvas-container">
-            <canvas id="gameCanvas"></canvas>
+            <canvas id="gameCanvas" width="400" height="300"></canvas>
             <div id="message" class="message hidden"></div>
         </div>
 
@@ -58,10 +59,62 @@
         </div>
 
         <div class="game-over hidden" id="game-over">
-            <h2 id="game-over-text">KONIEC GRY</h2>
-            <button id="restart-btn">ZAGRAJ PONOWNIE</button>
+            <div class="game-over-defeat" id="game-over-defeat">
+                <div class="smoke-container">
+                    <div class="smoke s1"></div><div class="smoke s2"></div><div class="smoke s3"></div>
+                    <div class="smoke s4"></div><div class="smoke s5"></div><div class="smoke s6"></div>
+                    <div class="smoke s7"></div><div class="smoke s8"></div>
+                </div>
+                <div class="spark-container">
+                    <div class="spark sp1"></div><div class="spark sp2"></div><div class="spark sp3"></div>
+                    <div class="spark sp4"></div><div class="spark sp5"></div><div class="spark sp6"></div>
+                    <div class="spark sp7"></div><div class="spark sp8"></div><div class="spark sp9"></div>
+                    <div class="spark sp10"></div><div class="spark sp11"></div><div class="spark sp12"></div>
+                </div>
+                <div class="wreck-tank">
+                    <div class="wreck-barrel"></div>
+                    <div class="wreck-body"></div>
+                    <div class="wreck-track"></div>
+                    <div class="wreck-fire f1"></div>
+                    <div class="wreck-fire f2"></div>
+                    <div class="wreck-fire f3"></div>
+                </div>
+                <h2 class="defeat-text">PRZEGRAŁEŚ!</h2>
+                <p class="defeat-sub">Twój czołg został zniszczony</p>
+                <button id="restart-btn-defeat" class="restart-btn defeat-btn">ZAGRAJ PONOWNIE</button>
+            </div>
+
+            <div class="game-over-victory" id="game-over-victory">
+                <div class="confetti-container">
+                    <div class="confetti c1"></div><div class="confetti c2"></div><div class="confetti c3"></div>
+                    <div class="confetti c4"></div><div class="confetti c5"></div><div class="confetti c6"></div>
+                    <div class="confetti c7"></div><div class="confetti c8"></div><div class="confetti c9"></div>
+                    <div class="confetti c10"></div><div class="confetti c11"></div><div class="confetti c12"></div>
+                    <div class="confetti c13"></div><div class="confetti c14"></div><div class="confetti c15"></div>
+                    <div class="confetti c16"></div><div class="confetti c17"></div><div class="confetti c18"></div>
+                </div>
+                <div class="star-container">
+                    <div class="star st1">★</div><div class="star st2">★</div><div class="star st3">★</div>
+                    <div class="star st4">★</div><div class="star st5">★</div><div class="star st6">★</div>
+                    <div class="star st7">★</div><div class="star st8">★</div>
+                </div>
+                <div class="crown">♛</div>
+                <div class="victory-tank">
+                    <div class="v-tank-barrel"></div>
+                    <div class="v-tank-body"></div>
+                    <div class="v-tank-track"></div>
+                </div>
+                <div class="medal">
+                    <div class="medal-ribbon"></div>
+                    <div class="medal-disc">★</div>
+                </div>
+                <h2 class="victory-text">ZWYCIĘSTWO!</h2>
+                <p class="victory-sub">Wróg został pokonany</p>
+                <button id="restart-btn-victory" class="restart-btn victory-btn">ZAGRAJ PONOWNIE</button>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
 </body>
 </html>

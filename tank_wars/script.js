@@ -90,6 +90,27 @@ const AudioSystem = {
                 osc.start(now);
                 osc.stop(now + 0.15);
                 break;
+            case 'defeat':
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 1.5);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+                osc.start(now);
+                osc.stop(now + 1.5);
+                break;
+            case 'victory':
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(523, now);
+                osc.frequency.setValueAtTime(659, now + 0.15);
+                osc.frequency.setValueAtTime(784, now + 0.3);
+                osc.frequency.setValueAtTime(1047, now + 0.45);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.setValueAtTime(0.25, now + 0.45);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+                osc.start(now);
+                osc.stop(now + 1.2);
+                break;
         }
     },
     
@@ -111,16 +132,16 @@ const TERRAIN = {
         this.height = height;
         this.pixels = new Uint8Array(width * height);
         const noise = new SimplexNoise();
-        const baseHeight = height * 0.65;
-        const amplitude = height * 0.2;
+        const baseHeight = height * 0.55;
+        const amplitude = height * 0.08;
         
         for (let x = 0; x < width; x++) {
             let h = 0;
-            h += noise.noise(x * 0.008, 0) * amplitude;
-            h += noise.noise(x * 0.02, 0) * amplitude * 0.5;
-            h += noise.noise(x * 0.05, 0) * amplitude * 0.25;
+            h += noise.noise(x * 0.005, 0) * amplitude;
+            h += noise.noise(x * 0.015, 0) * amplitude * 0.4;
+            h += noise.noise(x * 0.04, 0) * amplitude * 0.15;
             let terrainTop = Math.floor(baseHeight - h);
-            terrainTop = Math.max(20, Math.min(height - 40, terrainTop));
+            terrainTop = Math.max(30, Math.min(height - 50, terrainTop));
             
             for (let y = terrainTop; y < height; y++) {
                 this.pixels[y * width + x] = 1;
@@ -136,32 +157,34 @@ const TERRAIN = {
         this.pixels[y * this.width + x] = val;
     },
     getHeightAt(x) {
+        const ix = Math.floor(x);
         for (let y = 0; y < this.height; y++) {
-            if (this.get(x, y)) return y;
+            if (this.get(ix, y)) return y;
         }
         return this.height;
     }
 };
 
+let terrainImageData = null;
+
 function drawTerrain() {
-    const imageData = ctx.createImageData(canvas.width, canvas.height);
+    terrainImageData = ctx.createImageData(canvas.width, canvas.height);
     for (let y = 0; y < canvas.height; y++) {
         for (let x = 0; x < canvas.width; x++) {
             const idx = (y * canvas.width + x) * 4;
             if (TERRAIN.get(x, y)) {
                 const depth = y - TERRAIN.getHeightAt(x);
-                if (depth < 10) {
-                    imageData.data[idx] = 74; imageData.data[idx+1] = 124; imageData.data[idx+2] = 63;
-                } else if (depth < 40) {
-                    imageData.data[idx] = 139; imageData.data[idx+1] = 90; imageData.data[idx+2] = 43;
+                if (depth < 20) {
+                    terrainImageData.data[idx] = 74; terrainImageData.data[idx+1] = 124; terrainImageData.data[idx+2] = 63;
+                } else if (depth < 80) {
+                    terrainImageData.data[idx] = 139; terrainImageData.data[idx+1] = 90; terrainImageData.data[idx+2] = 43;
                 } else {
-                    imageData.data[idx] = 107; imageData.data[idx+1] = 107; imageData.data[idx+2] = 107;
+                    terrainImageData.data[idx] = 107; terrainImageData.data[idx+1] = 107; terrainImageData.data[idx+2] = 107;
                 }
-                imageData.data[idx+3] = 255;
+                terrainImageData.data[idx+3] = 255;
             }
         }
     }
-    ctx.putImageData(imageData, 0, 0);
 }
 
 class Tank {
@@ -172,41 +195,123 @@ class Tank {
         this.hp = 100;
         this.maxHp = 100;
         this.isPlayer = isPlayer;
-        this.width = 20;
-        this.height = 10;
+        this.width = 32;
+        this.height = 20;
         this.falling = false;
         this.fallSpeed = 0;
     }
 
     draw(ctx) {
         const baseY = this.y;
-        const dir = this.isPlayer ? 1 : -1;
+        const cx = this.x;
+        const py = baseY - 20;
         
-        // Tank body
-        ctx.fillStyle = this.isPlayer ? '#2d5a1e' : '#5a1e1e';
-        ctx.fillRect(this.x - this.width/2, baseY - this.height, this.width, this.height);
+        const c = this.isPlayer ? {
+            dark: '#1a3a4a', mid: '#2a6a8a', light: '#4acaff',
+            highlight: '#8aeaff', track: '#1a1a2a', wheel: '#3a3a5a', wheelInner: '#5a5a7a'
+        } : {
+            dark: '#4a1a1a', mid: '#8a2a2a', light: '#cc4a4a',
+            highlight: '#ff8a8a', track: '#1a1a2a', wheel: '#3a3a5a', wheelInner: '#5a5a7a'
+        };
         
-        // Tank turret
-        ctx.fillStyle = this.isPlayer ? '#1e3a12' : '#3a1212';
-        ctx.fillRect(this.x - 4, baseY - this.height - 4, 8, 4);
-        
-        // Barrel
-        ctx.save();
-        ctx.translate(this.x, baseY - this.height - 2);
-        ctx.rotate(-this.angle * Math.PI / 180 * dir);
-        ctx.fillStyle = '#444';
-        ctx.fillRect(0, -2, 14, 4);
-        ctx.restore();
+        this.drawTankBody(ctx, cx, py, c);
+        this.drawBarrel(ctx, cx, py);
         
         // HP bar
-        const barWidth = 24;
+        const barWidth = 30;
         const barHeight = 3;
-        const barX = this.x - barWidth/2;
-        const barY = baseY - this.height - 10;
+        const barX = cx - barWidth/2;
+        const barY = baseY - 40;
         ctx.fillStyle = '#333';
         ctx.fillRect(barX, barY, barWidth, barHeight);
         ctx.fillStyle = this.hp > 30 ? '#4caf50' : '#f44336';
         ctx.fillRect(barX, barY, barWidth * (this.hp / this.maxHp), barHeight);
+    }
+    
+    drawTankBody(ctx, cx, py, c) {
+        // Antenna
+        ctx.fillStyle = '#222';
+        ctx.fillRect(cx + 12, py + 2, 1, 8);
+        ctx.fillRect(cx + 11, py + 1, 3, 1);
+        
+        // Track left
+        ctx.fillStyle = c.track;
+        ctx.fillRect(cx - 14, py + 16, 28, 4);
+        
+        // Track wheels
+        for (let i = 0; i < 4; i++) {
+            ctx.fillStyle = c.wheel;
+            ctx.fillRect(cx - 12 + i * 7, py + 15, 5, 5);
+            ctx.fillStyle = c.wheelInner;
+            ctx.fillRect(cx - 11 + i * 7, py + 16, 3, 3);
+        }
+        
+        // Track teeth
+        ctx.fillStyle = c.track;
+        for (let i = 0; i < 7; i++) {
+            ctx.fillRect(cx - 13 + i * 4, py + 14, 2, 2);
+        }
+        
+        // Hull bottom
+        ctx.fillStyle = c.dark;
+        ctx.fillRect(cx - 13, py + 10, 26, 6);
+        
+        // Hull middle
+        ctx.fillStyle = c.mid;
+        ctx.fillRect(cx - 12, py + 8, 24, 4);
+        
+        // Hull top
+        ctx.fillStyle = c.light;
+        ctx.fillRect(cx - 10, py + 6, 20, 3);
+        
+        // Hull highlight
+        ctx.fillStyle = c.highlight;
+        ctx.fillRect(cx - 8, py + 7, 8, 1);
+        
+        // Turret base
+        ctx.fillStyle = c.dark;
+        ctx.beginPath();
+        ctx.arc(cx, py + 5, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Turret
+        ctx.fillStyle = c.mid;
+        ctx.beginPath();
+        ctx.arc(cx, py + 4, 7, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Turret highlight
+        ctx.fillStyle = c.light;
+        ctx.beginPath();
+        ctx.arc(cx - 2, py + 3, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Commander hatch
+        ctx.fillStyle = c.dark;
+        ctx.fillRect(cx + 3, py + 0, 4, 3);
+        ctx.fillStyle = c.mid;
+        ctx.fillRect(cx + 4, py + 0, 2, 2);
+    }
+    
+    drawBarrel(ctx, cx, py) {
+        const barrelAngle = this.angle * Math.PI / 180;
+        ctx.save();
+        ctx.translate(cx, py + 4);
+        ctx.rotate(-barrelAngle);
+        
+        ctx.fillStyle = '#333';
+        ctx.fillRect(-2, -2, 4, 4);
+        
+        ctx.fillStyle = '#444';
+        ctx.fillRect(0, -1, 16, 2);
+        
+        ctx.fillStyle = '#555';
+        ctx.fillRect(0, -1, 16, 1);
+        
+        ctx.fillStyle = '#222';
+        ctx.fillRect(14, -2, 3, 4);
+        
+        ctx.restore();
     }
 }
 
@@ -260,34 +365,32 @@ function fire() {
     game.projectile = {
         x: game.player.x,
         y: game.player.y - game.player.height - 2,
-        vx: Math.cos(angle) * speed * (game.player.angle <= 90 ? 1 : -1),
+        vx: Math.cos(angle) * speed,
         vy: -Math.sin(angle) * speed,
         owner: 'player'
     };
-    
-    showMessage('SZYBUJE...', 500);
 }
 
 document.addEventListener('keydown', (e) => {
     if (game.phase !== 'player') return;
     
     switch(e.key) {
-        case 'ArrowLeft':
-            game.player.angle = Math.min(180, game.player.angle + 2);
+        case 'ArrowUp':
+            game.player.angle = Math.min(180, game.player.angle + 1);
+            angleSlider.value = game.player.angle;
+            angleValue.textContent = game.player.angle;
+            break;
+        case 'ArrowDown':
+            game.player.angle = Math.max(0, game.player.angle - 1);
             angleSlider.value = game.player.angle;
             angleValue.textContent = game.player.angle;
             break;
         case 'ArrowRight':
-            game.player.angle = Math.max(0, game.player.angle - 2);
-            angleSlider.value = game.player.angle;
-            angleValue.textContent = game.player.angle;
-            break;
-        case 'ArrowUp':
-            powerSlider.value = Math.min(100, parseInt(powerSlider.value) + 2);
+            powerSlider.value = Math.min(100, parseInt(powerSlider.value) + 1);
             powerValue.textContent = powerSlider.value;
             break;
-        case 'ArrowDown':
-            powerSlider.value = Math.max(0, parseInt(powerSlider.value) - 2);
+        case 'ArrowLeft':
+            powerSlider.value = Math.max(0, parseInt(powerSlider.value) - 1);
             powerValue.textContent = powerSlider.value;
             break;
         case ' ':
@@ -304,8 +407,8 @@ function placeTanks() {
     
     game.player = new Tank(px, TERRAIN.getHeightAt(px), true);
     game.enemy = new Tank(ex, TERRAIN.getHeightAt(ex), false);
-    game.player.angle = 45;
-    game.enemy.angle = 135;
+    game.player.angle = 30;
+    game.enemy.angle = 150;
 }
 
 function applyShake() {
@@ -319,12 +422,14 @@ function applyShake() {
 }
 
 function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     applyShake();
-    if (terrainDirty) {
+    if (terrainDirty || !terrainImageData) {
         drawTerrain();
         terrainDirty = false;
     }
+    if (terrainImageData) ctx.putImageData(terrainImageData, 0, 0);
     if (game.player) game.player.draw(ctx);
     if (game.enemy) game.enemy.draw(ctx);
     if (game.projectile) drawProjectile();
@@ -435,7 +540,7 @@ function explode(x, y, owner, directHit = false) {
     terrainDirty = true;
     const power = parseInt(powerSlider.value) / 100;
     const radius = 15 + power * 10;
-    const damage = directHit ? 40 : 0;
+    const damage = directHit ? 20 : 0;
     
     game.explosions.push({ x, y, radius, age: 0, maxAge: 30 });
     
@@ -483,10 +588,11 @@ function endTurn() {
     
     if (checkGameOver()) return;
     
+    game.wind = (Math.random() - 0.5) * 0.1;
+    
     if (game.turn === 'player') {
         game.turn = 'enemy';
         game.phase = 'enemy';
-        showMessage('TURA AI...', 1000);
         setTimeout(aiTurn, 1500);
     } else {
         game.turn = 'player';
@@ -500,46 +606,82 @@ function aiTurn() {
     if (!game.enemy || game.enemy.hp <= 0) return;
     
     const target = game.player;
-    const dist = target.x - game.enemy.x;
-    const heightDiff = target.y - game.enemy.y;
-    const absDist = Math.abs(dist);
+    const dx = target.x - game.enemy.x;
+    const dy = (target.y - target.height/2) - (game.enemy.y - game.enemy.height/2);
+    const absDx = Math.abs(dx);
+    const sign = dx > 0 ? 1 : -1;
     
-    let optimalAngle, optimalPower;
+    // Ballistic calculation to aim at target
+    // v = sqrt(range * g / sin(2*angle))
+    // Try to find optimal angle/power
+    let bestAngle = 45;
+    let bestPower = 50;
+    let bestError = Infinity;
     
-    if (absDist < 100) {
-        optimalAngle = dist > 0 ? 60 : 120;
-        optimalPower = 40;
-    } else if (absDist < 250) {
-        optimalAngle = dist > 0 ? 50 : 130;
-        optimalPower = 60;
-    } else {
-        optimalAngle = dist > 0 ? 40 : 140;
-        optimalPower = 80;
+    for (let angle = 15; angle <= 75; angle += 5) {
+        const rad = angle * Math.PI / 180;
+        const sin2 = Math.sin(2 * rad);
+        if (sin2 <= 0) continue;
+        
+        // Required speed for this angle to reach target distance
+        const requiredSpeed = Math.sqrt(absDx * GRAVITY / sin2);
+        const requiredPower = (requiredSpeed / 12) * 100;
+        
+        if (requiredPower < 10 || requiredPower > 100) continue;
+        
+        // Check if this angle/power combination would hit near target
+        // Simulate trajectory
+        let simX = game.enemy.x;
+        let simY = game.enemy.y - game.enemy.height/2;
+        let simVx = Math.cos(rad) * requiredSpeed * sign;
+        let simVy = -Math.sin(rad) * requiredSpeed;
+        let error = Infinity;
+        
+        for (let t = 0; t < 200; t++) {
+            simVx += game.wind;
+            simVy += GRAVITY;
+            simX += simVx;
+            simY += simVy;
+            
+            if (simY >= target.y - target.height && Math.abs(simX - target.x) < absDx * 0.3) {
+                error = Math.abs(simX - target.x) + Math.abs(simY - target.y) * 0.5;
+                break;
+            }
+            if (simY > canvas.height || simX < 0 || simX > canvas.width) {
+                error = Math.abs(simX - target.x) + Math.abs(simY - target.y);
+                break;
+            }
+        }
+        
+        if (error < bestError) {
+            bestError = error;
+            bestAngle = angle;
+            bestPower = requiredPower;
+        }
     }
     
-    if (heightDiff > 30) optimalPower += 15;
-    else if (heightDiff < -30) optimalPower -= 10;
+    // Add wind compensation
+    bestPower -= game.wind * 30 * sign;
     
-    optimalPower -= game.wind * 50 * Math.sign(dist);
-    
+    // Apply difficulty-based randomness
     let angleError, powerError;
     switch(game.difficulty) {
         case 'easy':
-            angleError = (Math.random() - 0.5) * 30;
-            powerError = (Math.random() - 0.5) * 40;
+            angleError = (Math.random() - 0.5) * 20;
+            powerError = (Math.random() - 0.5) * 25;
             break;
         case 'medium':
-            angleError = (Math.random() - 0.5) * 16;
-            powerError = (Math.random() - 0.5) * 20;
+            angleError = (Math.random() - 0.5) * 10;
+            powerError = (Math.random() - 0.5) * 15;
             break;
         case 'hard':
-            angleError = (Math.random() - 0.5) * 6;
-            powerError = (Math.random() - 0.5) * 10;
+            angleError = (Math.random() - 0.5) * 4;
+            powerError = (Math.random() - 0.5) * 8;
             break;
     }
     
-    game.enemy.angle = Math.max(0, Math.min(180, optimalAngle + angleError));
-    const power = Math.max(10, Math.min(100, optimalPower + powerError));
+    game.enemy.angle = Math.max(5, Math.min(175, (sign > 0 ? bestAngle : 180 - bestAngle) + angleError));
+    const power = Math.max(10, Math.min(100, bestPower + powerError));
     
     const angle = game.enemy.angle * Math.PI / 180;
     const speed = (power / 100) * 12;
@@ -547,25 +689,24 @@ function aiTurn() {
     game.projectile = {
         x: game.enemy.x,
         y: game.enemy.y - game.enemy.height - 2,
-        vx: Math.cos(angle) * speed * (game.enemy.angle <= 90 ? 1 : -1),
+        vx: Math.cos(angle) * speed,
         vy: -Math.sin(angle) * speed,
         owner: 'enemy'
     };
     
-    showMessage('AI STRZELA...', 500);
+    AudioSystem.play('fire');
 }
 
 function checkGameOver() {
+    const overlay = document.getElementById('game-over');
     if (game.player.hp <= 0) {
-        showMessage('PRZEGRAŁEŚ!', 999999);
-        document.getElementById('game-over-text').textContent = 'PRZEGRAŁEŚ!';
-        document.getElementById('game-over').classList.remove('hidden');
+        overlay.className = 'game-over defeat';
+        AudioSystem.play('defeat');
         return true;
     }
     if (game.enemy.hp <= 0) {
-        showMessage('WYGRAŁEŚ!', 999999);
-        document.getElementById('game-over-text').textContent = 'WYGRAŁEŚ!';
-        document.getElementById('game-over').classList.remove('hidden');
+        overlay.className = 'game-over victory';
+        AudioSystem.play('victory');
         return true;
     }
     return false;
@@ -584,6 +725,7 @@ function checkFalling() {
 }
 
 function updateFalling() {
+    let fallen = false;
     game.fallingTanks = game.fallingTanks.filter(tank => {
         tank.fallSpeed += GRAVITY;
         tank.y += tank.fallSpeed;
@@ -595,10 +737,15 @@ function updateFalling() {
             const fallDamage = Math.floor(tank.fallSpeed * 2);
             tank.hp = Math.max(0, tank.hp - fallDamage);
             tank.fallSpeed = 0;
+            fallen = true;
             return false;
         }
         return true;
     });
+    if (fallen) {
+        updateHPBars();
+        if (checkGameOver()) return;
+    }
 }
 
 function updateExplosions() {
@@ -609,6 +756,7 @@ function updateExplosions() {
 }
 
 function updateHPBars() {
+    if (!game.player || !game.enemy) return;
     const playerFill = document.getElementById('player-hp');
     const enemyFill = document.getElementById('enemy-hp');
     const playerText = document.getElementById('player-hp-text');
@@ -626,11 +774,12 @@ function updateHPBars() {
 }
 
 function startGame() {
-    document.getElementById('game-over').classList.add('hidden');
+    document.getElementById('game-over').className = 'game-over hidden';
     document.getElementById('difficulty-select').classList.remove('hidden');
 }
 
-document.getElementById('restart-btn').addEventListener('click', startGame);
+document.getElementById('restart-btn-defeat').addEventListener('click', startGame);
+document.getElementById('restart-btn-victory').addEventListener('click', startGame);
 
 document.querySelectorAll('.diff-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -641,6 +790,7 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
 });
 
 function initGame() {
+    resizeCanvas();
     TERRAIN.generate(canvas.width, canvas.height);
     placeTanks();
     game.wind = (Math.random() - 0.5) * 0.1;
@@ -655,7 +805,9 @@ function initGame() {
     showMessage('TWOJA TURA!', 1000);
 }
 
+let frameCount = 0;
 function gameLoop() {
+    frameCount++;
     updatePhysics();
     updateFalling();
     updateExplosions();
@@ -664,18 +816,25 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-window.addEventListener('resize', () => {
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
-});
+function resizeCanvas() {
+    const container = canvas.parentElement;
+    const w = container.clientWidth || 400;
+    const h = container.clientHeight || 300;
+    canvas.width = w;
+    canvas.height = h;
+    terrainDirty = true;
+}
 
-canvas.width = canvas.parentElement.clientWidth;
-canvas.height = canvas.parentElement.clientHeight;
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 document.getElementById('mute-btn').addEventListener('click', () => {
     AudioSystem.toggle();
     document.getElementById('mute-btn').textContent = AudioSystem.muted ? '🔇' : '🔊';
 });
 
-startGame();
-requestAnimationFrame(gameLoop);
+setTimeout(() => {
+    resizeCanvas();
+    startGame();
+    requestAnimationFrame(gameLoop);
+}, 200);
