@@ -1,4 +1,4 @@
-const CACHE_NAME = 'othello-v2';
+const CACHE_NAME = 'othello-v3';
 const ASSETS = [
     './',
     './index.html',
