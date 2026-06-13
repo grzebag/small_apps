@@ -43,6 +43,62 @@ class SimplexNoise {
     }
 }
 
+const AudioSystem = {
+    ctx: null,
+    muted: true,
+    
+    init() {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    },
+    
+    play(type) {
+        if (this.muted || !this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        const now = this.ctx.currentTime;
+        
+        switch(type) {
+            case 'fire':
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+                break;
+            case 'explode':
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+                break;
+            case 'hit':
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+                break;
+        }
+    },
+    
+    toggle() {
+        this.muted = !this.muted;
+        if (!this.ctx) this.init();
+    }
+};
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -193,6 +249,7 @@ function showMessage(text, duration = 1500) {
 
 function fire() {
     if (game.phase !== 'player' || !game.player) return;
+    AudioSystem.play('fire');
     game.phase = 'shooting';
     fireBtn.disabled = true;
     
@@ -251,29 +308,70 @@ function placeTanks() {
     game.enemy.angle = 135;
 }
 
+function applyShake() {
+    if (shakeAmount > 0) {
+        const dx = (Math.random() - 0.5) * shakeAmount;
+        const dy = (Math.random() - 0.5) * shakeAmount;
+        ctx.translate(dx, dy);
+        shakeAmount *= 0.85;
+        if (shakeAmount < 0.5) shakeAmount = 0;
+    }
+}
+
 function draw() {
-    drawTerrain();
+    ctx.save();
+    applyShake();
+    if (terrainDirty) {
+        drawTerrain();
+        terrainDirty = false;
+    }
     if (game.player) game.player.draw(ctx);
     if (game.enemy) game.enemy.draw(ctx);
     if (game.projectile) drawProjectile();
     drawExplosions();
     drawHUD();
+    ctx.restore();
 }
 
+const trail = [];
+
 function drawProjectile() {
+    trail.forEach((t, i) => {
+        const alpha = i / trail.length;
+        ctx.fillStyle = `rgba(255, 200, 0, ${alpha * 0.5})`;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    
     const p = game.projectile;
     ctx.fillStyle = '#ff0';
+    ctx.shadowColor = '#ff0';
+    ctx.shadowBlur = 8;
     ctx.beginPath();
     ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
     ctx.fill();
+    ctx.shadowBlur = 0;
 }
 
 function drawExplosions() {
     game.explosions.forEach(e => {
-        const alpha = 1 - e.age / e.maxAge;
-        ctx.fillStyle = `rgba(255, ${100 * alpha}, 0, ${alpha * 0.5})`;
+        const progress = e.age / e.maxAge;
+        const alpha = 1 - progress;
+        const currentRadius = e.radius * (0.3 + progress * 0.7);
+        
+        ctx.fillStyle = `rgba(255, 150, 0, ${alpha * 0.3})`;
         ctx.beginPath();
-        ctx.arc(e.x, e.y, e.radius * (1 - alpha * 0.3), 0, Math.PI * 2);
+        ctx.arc(e.x, e.y, currentRadius * 1.3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        const gradient = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, currentRadius);
+        gradient.addColorStop(0, `rgba(255, 255, 100, ${alpha})`);
+        gradient.addColorStop(0.4, `rgba(255, 100, 0, ${alpha})`);
+        gradient.addColorStop(1, `rgba(100, 0, 0, ${alpha * 0.5})`);
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, currentRadius, 0, Math.PI * 2);
         ctx.fill();
     });
 }
@@ -292,9 +390,12 @@ function drawHUD() {
 const GRAVITY = 0.15;
 
 function updatePhysics() {
-    if (!game.projectile) return;
+    if (!game.projectile) { trail.length = 0; return; }
     
     const p = game.projectile;
+    trail.push({ x: p.x, y: p.y });
+    if (trail.length > 15) trail.shift();
+    
     p.vy += GRAVITY;
     p.vx += game.wind;
     p.x += p.vx;
@@ -325,7 +426,13 @@ function updatePhysics() {
     }
 }
 
+let shakeAmount = 0;
+let terrainDirty = true;
+
 function explode(x, y, owner, directHit = false) {
+    AudioSystem.play('explode');
+    shakeAmount = 8;
+    terrainDirty = true;
     const power = parseInt(powerSlider.value) / 100;
     const radius = 15 + power * 10;
     const damage = directHit ? 40 : 0;
@@ -367,7 +474,6 @@ function explode(x, y, owner, directHit = false) {
     checkFalling();
     
     setTimeout(() => {
-        drawTerrain();
         checkGameOver() || endTurn();
     }, 500);
 }
@@ -544,6 +650,7 @@ function initGame() {
     game.explosions = [];
     game.fallingTanks = [];
     fireBtn.disabled = false;
+    terrainDirty = true;
     updateHPBars();
     showMessage('TWOJA TURA!', 1000);
 }
@@ -564,6 +671,11 @@ window.addEventListener('resize', () => {
 
 canvas.width = canvas.parentElement.clientWidth;
 canvas.height = canvas.parentElement.clientHeight;
+
+document.getElementById('mute-btn').addEventListener('click', () => {
+    AudioSystem.toggle();
+    document.getElementById('mute-btn').textContent = AudioSystem.muted ? '🔇' : '🔊';
+});
 
 startGame();
 requestAnimationFrame(gameLoop);

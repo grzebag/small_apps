@@ -172,7 +172,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 #fire-btn {
-    padding: 10px 20px;
+    padding: 12px 24px;
     background: var(--green);
     color: white;
     border: none;
@@ -182,10 +182,22 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     font-family: inherit;
     letter-spacing: 1px;
+    min-height: 48px;
 }
 
 #fire-btn:active { background: #3a6630; }
 #fire-btn:disabled { background: #555; cursor: not-allowed; }
+
+#mute-btn {
+    padding: 10px;
+    background: var(--panel-bg);
+    color: var(--text);
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    min-width: 44px;
+}
 
 .difficulty-select, .game-over {
     position: absolute;
