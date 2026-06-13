@@ -861,13 +861,17 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+let canvasInitialized = false;
+
 function resizeCanvas() {
-    const container = canvas.parentElement;
-    const w = container.clientWidth || 400;
-    const h = container.clientHeight || 300;
-    canvas.width = w;
-    canvas.height = h;
-    terrainDirty = true;
+    if (!canvasInitialized) {
+        const container = canvas.parentElement;
+        const w = container.clientWidth || 400;
+        const h = container.clientHeight || 300;
+        canvas.width = w;
+        canvas.height = h;
+        canvasInitialized = true;
+    }
 }
 
 window.addEventListener('resize', resizeCanvas);
