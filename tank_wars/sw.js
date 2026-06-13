@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tank-wars-v4';
+const CACHE_NAME = 'tank-wars-v5';
 const ASSETS = [
     './',
     './index.html',

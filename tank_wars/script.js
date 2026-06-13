@@ -838,6 +838,11 @@ function initGame() {
     resizeCanvas();
     TERRAIN.generate(canvas.width, canvas.height);
     placeTanks();
+    
+    if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('portrait').catch(() => {});
+    }
+    
     game.wind = (Math.random() - 0.5) * 0.1;
     game.turn = 'player';
     game.phase = 'player';
@@ -861,17 +866,13 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-let canvasInitialized = false;
-
 function resizeCanvas() {
-    if (!canvasInitialized) {
-        const container = canvas.parentElement;
-        const w = container.clientWidth || 400;
-        const h = container.clientHeight || 300;
-        canvas.width = w;
-        canvas.height = h;
-        canvasInitialized = true;
-    }
+    const container = canvas.parentElement;
+    const w = container.clientWidth || 400;
+    const h = container.clientHeight || 300;
+    canvas.width = w;
+    canvas.height = h;
+    terrainDirty = true;
 }
 
 window.addEventListener('resize', resizeCanvas);
